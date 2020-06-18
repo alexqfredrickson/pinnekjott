@@ -7,7 +7,7 @@
 # dependencies
 /piecebuilder/node_modules
 /piecebuilder/.pnp
-/piecebuilder.pnp.js
+/piecebuilder/.pnp.js
 
 # testing
 /piecebuilder/coverage
