@@ -1,1 +1,27 @@
 .idea/
+
+# #################### #
+# piecebuilder ignores #
+# #################### #
+
+# dependencies
+/piecebuilder/node_modules
+/piecebuilder/.pnp
+/piecebuilder.pnp.js
+
+# testing
+/piecebuilder/coverage
+
+# production
+/piecebuilder/build
+
+# misc
+/piecebuilder/.DS_Store
+/piecebuilder/.env.local
+/piecebuilder/.env.development.local
+/piecebuilder/.env.test.local
+/piecebuilder/.env.production.local
+
+/piecebuilder/npm-debug.log*
+/piecebuilder/yarn-debug.log*
+/piecebuilder/yarn-error.log*
