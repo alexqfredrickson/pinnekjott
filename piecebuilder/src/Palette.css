@@ -1,0 +1,14 @@
+.Palette {
+    text-align: center;
+    margin: 200px !important;
+}
+
+.row {
+    display: inline-block;
+}
+
+.cell {
+    height: 50px;
+    width: 50px;
+    border: 2px solid black;
+}

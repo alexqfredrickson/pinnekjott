@@ -1,0 +1,13 @@
+.PaletteSquare {
+  height: 50px;
+  width: 50px;
+  border: 2px solid black;
+}
+
+.bg-white {
+  background-color: #FFFFFF;
+}
+
+.bg-green {
+  background-color: #00FF00;
+}
