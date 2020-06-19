@@ -34,7 +34,7 @@ class PieceBuilder extends React.Component {
   render() {
     return (
       <div className="piece-builder">
-        <PiecePalette grid={this.state.grid} squareClicker={this.handleClick}/>
+        <PiecePalette grid={this.state.grid} squareClicker={this.handleClick} />
         <PieceDetails />    
       </div>
       );

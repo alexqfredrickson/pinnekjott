@@ -1,3 +1,11 @@
 .piece-details {
-  border: 2px solid green;
+  width: 25%;
+  margin: 40px;
+  border: 2px solid rgb(155, 155, 200);
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.piece-details input::after {
+  content: "\A";
 }
