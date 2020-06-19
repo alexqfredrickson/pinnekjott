@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Palette from './Palette';
+import PieceBuilder from './js/PieceBuilder';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Palette />
+    <PieceBuilder />
   </React.StrictMode>,
   document.getElementById('root')
 );
