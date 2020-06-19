@@ -33,11 +33,11 @@ class PieceBuilder extends React.Component {
   render() {
     return (
       <div className="container-fluid piece-builder">
-        <div class="row">
-          <div class="col-6">
+        <div className="row">
+          <div className="col-6">
             <PiecePalette grid={this.state.grid} squareClicker={this.handleClick} />
           </div>
-          <div class="col-6">
+          <div className="col-6">
             <PiecePreview />
           </div>
         </div>
