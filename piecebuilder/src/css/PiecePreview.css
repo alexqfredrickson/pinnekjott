@@ -1,8 +1,9 @@
-.piece-palette {
+.piece-preview {
     border: 2px solid rgb(155, 155, 200);
     border-radius: 20px;
-    margin: 2%;
     padding: 2%;
+    margin: 2%;
     min-height: 300px;
-    text-align: center;
 }
+
+  

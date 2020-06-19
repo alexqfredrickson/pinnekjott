@@ -1,6 +1,7 @@
 import React from 'react';
 import '../css/PieceBuilder.css';
 import PiecePalette from './PiecePalette.js';
+import PiecePreview from './PiecePreview.js';
 import PieceDetails from './PieceDetails.js';
 
 class PieceBuilder extends React.Component {
@@ -15,8 +16,6 @@ class PieceBuilder extends React.Component {
         )
       )  
     }
-
-    // console.log(this.state.grid);
 
     this.handleClick = this.handleClick.bind(this);
   }
@@ -33,9 +32,19 @@ class PieceBuilder extends React.Component {
 
   render() {
     return (
-      <div className="piece-builder">
-        <PiecePalette grid={this.state.grid} squareClicker={this.handleClick} />
-        <PieceDetails />    
+      <div className="container-fluid piece-builder">
+        <div class="row">
+          <div class="col-6">
+            <PiecePalette grid={this.state.grid} squareClicker={this.handleClick} />
+          </div>
+          <div class="col-6">
+            <PiecePreview />
+          </div>
+        </div>
+        
+        <div className="row">
+          <PieceDetails />
+        </div>    
       </div>
       );
   };

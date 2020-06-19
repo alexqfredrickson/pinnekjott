@@ -11,11 +11,22 @@ class PieceDetails extends React.Component {
       cost: null,
     };
     
-    this.handleChange = this.handleChange.bind(this);
+    this.handleButtonCountChange = this.handleButtonCountChange.bind(this);
+    this.handleTurnCountChange = this.handleTurnCountChange.bind(this);
+    this.handleCostChange = this.handleCostChange.bind(this);
+
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
+  handleButtonCountChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleTurnCountChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleCostChange(event) {
     this.setState({value: event.target.value});
   }
 
@@ -46,7 +57,7 @@ class PieceDetails extends React.Component {
         <input type="text" value={this.state.cost} onChange={this.handleCostChange} />
         <br/>
         
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Register Piece" />
       </form>
     );
   };
