@@ -37,7 +37,7 @@ class PieceDetails extends React.Component {
 
   render() {
     return (
-      <form className="piece-details" onSubmit={this.handleSumbit}>
+      <form className="col-3 piece-details" onSubmit={this.handleSumbit}>
         
         <label>Button Count</label>
         <br/>

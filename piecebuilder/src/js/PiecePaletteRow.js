@@ -5,7 +5,6 @@ import PiecePaletteSquare from './PiecePaletteSquare.js';
 class PiecePaletteRow extends React.Component {
 
   render() {
-
     const squares = Array.from(this.props.row).map((item, i) => 
 
       <PiecePaletteSquare 
