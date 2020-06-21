@@ -1,9 +1,8 @@
 .piece-palette {
-    border: 2px solid rgb(155, 255, 200);
-    background-color: white;
-    border-radius: 20px;
-    margin: 2%;
-    padding: 2%;
+    border: 2px solid #0d3b66;
+    background-color: #fff3c5;
+    border-radius: 25px;
+    padding: 25px;
     min-height: 300px;
     text-align: center;
 }

@@ -3,6 +3,7 @@ import '../css/PieceBuilder.css';
 import PiecePalette from './PiecePalette.js';
 import PiecePreview from './PiecePreview.js';
 import PieceDetails from './PieceDetails.js';
+import PieceBuilderInfo from './PieceBuilderInfo.js';
 
 class PieceBuilder extends React.Component {
 
@@ -15,10 +16,14 @@ class PieceBuilder extends React.Component {
           j => [i, j, false]
         )
       ),
+      buttonCount: null,
+      turnCount: null,
+      cost: null,
+      currentNumpyStringFromGrid: "",
       numpyStrings: []
     }
 
-    this.handleClick = this.handleClick.bind(this);
+    this.handleGridClick = this.handleGridClick.bind(this);
   }
 
   getGridAsNumpyString() {
@@ -60,37 +65,63 @@ class PieceBuilder extends React.Component {
     return numpyString;
   }
 
-  
-
-  handleClick(e, rowNumber, columnNumer, isSelected) {
+  handleGridClick(e, rowNumber, columnNumer, isSelected) {
     
     let newGrid = Array.from(this.state.grid);
     newGrid[rowNumber][columnNumer] = [rowNumber, columnNumer, isSelected]
 
-    let newNumpyStrings = Array.from(this.state.numpyStrings);
-    let currentNumpyString = this.getGridAsNumpyString();
-    newNumpyStrings.push(currentNumpyString);
+    let currentNumpyStringFromGrid = this.getGridAsNumpyString();
 
     this.setState({
       grid: newGrid,
-      numpyStrings: [currentNumpyString]
+      currentNumpyStringFromGrid: currentNumpyStringFromGrid,
     });
+  }
+
+  handleSavePiece(event) {
+    event.preventDefault();
+    console.log('A piece was saved.');
+  }
+
+  handleChangeButtonCount(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleChangeTurnCount(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleChangeCost(event) {
+    this.setState({value: event.target.value});
   }
 
   render() {
     return (
       <div className="container-fluid piece-builder">
         <div className="row">
-          <div className="col-6">
-            <PiecePalette grid={this.state.grid} squareClicker={this.handleClick} />
+          <div className="col-8">
+            <PieceBuilderInfo />
           </div>
-          <div className="col-6">
-            <PiecePreview preview={this.state.numpyStrings}/>
-          </div>
+          <div className="col-4">
+            <PiecePalette grid={this.state.grid} squareClicker={this.handleGridClick} />
+          </div>  
         </div>
         
         <div className="row">
-          <PieceDetails />
+          <div className="col-4">
+            <PieceDetails 
+              buttonCount={this.state.buttonCount} 
+              buttonCountChanger={this.handleChangeButtonCount} 
+              turnCount={this.state.turnCount} 
+              turnCountChanger={this.handleChangeTurnCount}
+              cost={this.state.cost} 
+              costChanger={this.handleChangeCost}
+              pieceSaver={this.handleSavePiece} 
+            />
+          </div>
+          <div className="col-8">
+            <PiecePreview preview={this.state.numpyStrings}/>
+          </div>
         </div>    
       </div>
       );
