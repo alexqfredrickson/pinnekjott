@@ -4,26 +4,33 @@ import '../css/PieceDetails.css';
 class PieceDetails extends React.Component {
   render() {
     return (
-      <form className="piece-details" onSubmit={this.props.pieceSaver}>
+      <form className="piece-details form-group" onSubmit={this.props.pieceSaver}>
         <label>Button Count</label>
         <br/>
 
-        <input type="text" value={this.props.buttonCount} onChange={this.handleButtonCountChange} />
+        <input 
+          id="buttonCountInput"
+          className="form-control" 
+          type="text" 
+          value={this.props.buttonCount} 
+          onChange={this.props.buttonCountChanger}
+        />
+        
         <br/>
                 
-        <label>Turn Count</label>
-        <br/>
-        
-        <input type="text" value={this.props.turnCount} onChange={this.handleTurnCountChange} />
-        <br/>
-        
         <label>Cost</label>
         <br/>
         
-        <input type="text" value={this.props.cost} onChange={this.handleCostChange} />
-        <br/><br/>
+        <input className="form-control" type="text" value={this.props.cost} onChange={this.props.costChanger} />
+        <br/>
         
-        <input type="submit" value="Save Piece" />
+        <label>Turn Count</label>
+        <br/>
+        
+        <input className="form-control" type="text" value={this.props.turnCount} onChange={this.props.turnCountChanger} />
+        <br/>
+                
+        <input className="btn" type="submit" value="Save Piece" />
       </form>
     );
   };

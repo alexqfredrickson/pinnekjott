@@ -2,13 +2,6 @@ import React from 'react';
 import '../css/PiecePreview.css';
 
 class PiecePreview extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      numpyData: this.props.preview
-    }
-  }
 
   // https://stackoverflow.com/questions/41233458/react-child-component-not-updating-after-parent-state-change
   componentWillReceiveProps(nextProps) {
@@ -17,7 +10,9 @@ class PiecePreview extends React.Component {
 
   render() {
     return (
-      <div className="piece-preview">{this.state.numpyData}</div>
+      <div className="piece-preview">
+        <textarea className="form-control" value={this.props.preview}></textarea>
+      </div>
       );
   };
 }
