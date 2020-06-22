@@ -1,2 +1,2 @@
-# pinnekjott
-towards an engine for [Patchwork](https://boardgamegeek.com/boardgame/163412/patchwork) 
+cd ~/path/to/pinnekjott/piecebuilder/;
+npm start;
