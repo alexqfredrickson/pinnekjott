@@ -9,6 +9,7 @@
 /piecebuilder/node_modules
 /piecebuilder/.pnp
 /piecebuilder/.pnp.js
+/piecebuilder/.next/
 
 # testing
 /piecebuilder/coverage
