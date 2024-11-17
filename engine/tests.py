@@ -21,4 +21,4 @@ class EngineTests(unittest.TestCase):
     def test_place_piece_on_board(self):
         random_piece = random.sample(self.all_pieces, k=1)[0]
         random_piece_orientation = random.sample(random_piece.bitboard_masks, k=1)[0]
-        self.board.place_piece_on_board((4, 5), random_piece_orientation)
+        self.board.place_piece_on_board((1, 1), random_piece_orientation)

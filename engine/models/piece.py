@@ -1,3 +1,4 @@
+import math
 import numpy
 
 
@@ -123,7 +124,7 @@ class Board:
         """
 
         for row in self.bitboard:
-            print("{0:{fill}9b}".format(row, fill='0'))
+            print(format(row, "09b"))
 
         print("")
 
@@ -160,10 +161,12 @@ class Board:
 
         target_rows = range(top_offset, top_offset + len(piece_orientation))
 
+        orientation_length = max([int.bit_length(x) for x in piece_orientation])
+
         j = 0
 
         for i in target_rows:
-            self.bitboard[i] = self.bitboard[i] | (piece_orientation[j] << (8 - left_offset))  # todo: not quite right
+            self.bitboard[i] = self.bitboard[i] | (piece_orientation[j] << (9 - left_offset - orientation_length))
             j += 1
 
         self.print_board()
