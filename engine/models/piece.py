@@ -9,8 +9,8 @@ class Piece:
     def __init__(self, base_orientation, buttons, turns, cost, name):
         """
 
-        :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This represents a
-                                 "bitboard mask". Pieces can be rotated and flipped.
+        :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This is used to create
+                                 "bitboard masks", which can be rotated or flipped.
         :type base_orientation: list of list of int
         :param buttons: The amount of buttons depicted on the piece.
         :type buttons: int
@@ -28,7 +28,7 @@ class Piece:
         self.cost = cost
         self.name = name
 
-        self.all_possible_orientations = self.get_all_possible_orientations()
+        self.bitboard_masks = self._populate_bitboard_masks()
 
     def __str__(self):
         return self.print_piece(self.name, self.base_orientation)
@@ -54,7 +54,7 @@ class Piece:
 
         return s
 
-    def get_all_possible_orientations(self):
+    def _populate_bitboard_masks(self):
         """
         Returns an array of a piece's possible rotated/flipped orientations.
         """
@@ -78,7 +78,22 @@ class Piece:
             if not numpy.any([o2 for o2 in unique_orientations if numpy.array_equal(o1, o2)]):
                 unique_orientations.append(o1)
 
-        return unique_orientations
+        # for each orientation, convert these into integer arrays, which implicitly represent big-endian binary
+        # formatted rows
+
+        bitboard_masks = []
+
+        for uo in unique_orientations:
+
+            bitboard_mask = []
+
+            for row in uo:
+                # np array to integer representation of the np array's implicit big-endian binary string!
+                bitboard_mask.append(int("".join([str(x) for x in row.tolist()]), 2))
+
+            bitboard_masks.append(bitboard_mask)
+
+        return bitboard_masks
 
 
 class Board:
@@ -137,22 +152,19 @@ class Board:
         :type piece_orientation: list of list of int
         """
 
+        self.print_board()
+        print(piece_orientation)
+
         top_offset = board_position[0]
         left_offset = board_position[1]
 
-        # convert piece orientation from big-endian binary array to integer
-        piece_orientation_as_ints = [] >> (8 - left_offset)
+        target_rows = range(top_offset, top_offset + len(piece_orientation))
 
-        for row in piece_orientation:
-            piece_orientation_as_ints.append(int(row, 2) << board_position)
+        j = 0
 
-        for i in range(0, 9):
-            if i < top_offset:
-                continue
-            # self.bitboard[i] = self.bitboard[i] |
+        for i in target_rows:
+            self.bitboard[i] = self.bitboard[i] | (piece_orientation[j] << (8 - left_offset))  # todo: not quite right
+            j += 1
 
-            # todo
-            pass
-
-
+        self.print_board()
 
