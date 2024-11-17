@@ -1,23 +1,22 @@
 import unittest
 import random
+from models.piece import Piece, Board
 from engine.pieces import Pieces
 
 
 class EngineTests(unittest.TestCase):
 
     all_pieces = Pieces.pieces
+    board = Board()
 
-    @staticmethod
-    def test_get_orientations():
-        p = EngineTests.all_pieces[1]
-
-        for o in p.orientations:
-            print(p.print_orientation(o))
-
-    @staticmethod
-    @unittest.skip
-    def test_print_piece():
-        random_pieces = random.sample(EngineTests.all_pieces, 10)
-
-        for p in random_pieces:
+    def test_print_piece(self):
+        for p in self.all_pieces:
             print(p)
+
+    def test_print_board(self):
+        self.board.print_board()
+
+    def test_place_piece_on_board(self):
+        random_piece = random.sample(self.all_pieces, k=1)[0]
+        random_piece_orientation = random.sample(random_piece.all_possible_orientations, k=1)[0]
+        self.board.place_piece_on_board((4, 5), random_piece_orientation)
