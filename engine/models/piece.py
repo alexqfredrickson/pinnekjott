@@ -29,24 +29,18 @@ class Piece:
         self.cost = cost
         self.name = name
 
-        self.bitboard_masks = self._populate_bitboard_masks()
+        self.orientations = self._get_possible_orientations()
 
     def __str__(self):
-        return self.print_piece(self.name, self.base_orientation)
-
-    @staticmethod
-    def print_piece(name, base_orientation):
         """
         Prints a piece to the terminal.
-
-        :param base_orientation: A two-dimensional array of boolean values.
         """
 
-        s = f"Piece {name}\n"
+        s = f"Piece {self.name}\n"
 
-        for i in range(0, len(base_orientation)):
-            for j in range(0, len(base_orientation[i])):
-                if base_orientation[i][j]:
+        for i in range(0, len(self.base_orientation)):
+            for j in range(0, len(self.base_orientation[i])):
+                if self.base_orientation[i][j]:
                     s += "▓"
                 else:
                     s += "."
@@ -55,7 +49,7 @@ class Piece:
 
         return s
 
-    def _populate_bitboard_masks(self):
+    def _get_possible_orientations(self):
         """
         Returns an array of a piece's possible rotated/flipped orientations.
         """
@@ -64,13 +58,23 @@ class Piece:
 
         # get normal rotations
         for i in range(0, 4):
-            orientations.append(numpy.rot90(self.base_orientation, k=i))
+            orientations.append(
+                PieceOrientation(
+                    name=f"{self.name}R{i}F0",
+                    bitboard_mask=numpy.rot90(self.base_orientation, k=i)
+                )
+            )
 
         # get flipped rotations
-        flipped_squares = numpy.flip(self.base_orientation, axis=1)
+        flipped_base_orientation = numpy.flip(self.base_orientation, axis=1)
 
         for i in range(0, 4):
-            orientations.append(numpy.rot90(flipped_squares, k=i))
+            orientations.append(
+                PieceOrientation(
+                    name=f"{self.name}R{i}F1",
+                    bitboard_mask=numpy.rot90(flipped_base_orientation, k=i)
+                )
+            )
 
         # remove redundant orientations
         unique_orientations = []
@@ -79,22 +83,39 @@ class Piece:
             if not numpy.any([o2 for o2 in unique_orientations if numpy.array_equal(o1, o2)]):
                 unique_orientations.append(o1)
 
-        # for each orientation, convert these into integer arrays, which implicitly represent big-endian binary
-        # formatted rows
+        # for each orientation, convert the numpy arrays into integer arrays (which implicitly represent big-endian
+        # binary-formatted rows)
+        for o in unique_orientations:
 
-        bitboard_masks = []
+            bitboard_masks = []
 
-        for uo in unique_orientations:
-
-            bitboard_mask = []
-
-            for row in uo:
+            for row in o.bitboard_mask:
                 # np array to integer representation of the np array's implicit big-endian binary string!
-                bitboard_mask.append(int("".join([str(x) for x in row.tolist()]), 2))
+                bitboard_masks.append(int("".join([str(x) for x in row.tolist()]), 2))
 
-            bitboard_masks.append(bitboard_mask)
+            o.bitboard_mask = bitboard_masks
 
-        return bitboard_masks
+        return unique_orientations
+
+
+class PieceOrientation:
+    def __init__(self, name, bitboard_mask):
+        self.name = name
+        self.bitboard_mask = bitboard_mask
+
+    def __str__(self):
+        """
+        Prints a piece to the terminal.
+        """
+
+        s = f"Piece {self.name}\n"
+
+        for row in self.bitboard_mask:
+            s += (format(row, f"0{int.bit_length(max(self.bitboard_mask))}b")  # bit-based string formatting lol
+                  .replace('0', '.')
+                  .replace("1", "▓") + "\n")
+
+        return s
 
 
 class Board:
@@ -118,15 +139,13 @@ class Board:
     def __init__(self):
         self.bitboard = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # each integer in the array represents a row, from top to bottom
 
-    def print_board(self):
-        """
-        Prints a board to the terminal.
-        """
+    def __str__(self):
+        s = ""
 
         for row in self.bitboard:
-            print(format(row, "09b"))
+            s += format(row, "09b") + "\n"
 
-        print("")
+        return s
 
     def place_piece_on_board(self, board_position, piece_orientation):
         """
@@ -153,7 +172,7 @@ class Board:
         :type piece_orientation: list of list of int
         """
 
-        self.print_board()
+        print(self.bitboard)
         print(piece_orientation)
 
         top_offset = board_position[0]
@@ -169,5 +188,5 @@ class Board:
             self.bitboard[i] = self.bitboard[i] | (piece_orientation[j] << (9 - left_offset - orientation_length))
             j += 1
 
-        self.print_board()
+        print(self.bitboard)
 
