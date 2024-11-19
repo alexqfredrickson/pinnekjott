@@ -1,4 +1,3 @@
-import math
 import numpy
 
 
@@ -76,6 +75,7 @@ class Piece:
                 )
             )
 
+        # TODO: this doesnt work
         # remove redundant orientations
         unique_orientations = []
 
