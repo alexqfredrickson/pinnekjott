@@ -1,4 +1,8 @@
+import random
+import itertools
 import numpy
+from anytree import Node, RenderTree
+from data import GamePieces
 
 
 class Piece:
@@ -115,6 +119,7 @@ class Board:
 
     def __init__(self):
         self.bitboard = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # each integer in the array represents a row, from top to bottom
+        self.acquired_pieces = ()
 
     def __str__(self):
         s = ""
@@ -167,3 +172,82 @@ class Board:
 
         print(self.bitboard)
 
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.opponent = None
+
+        self.board = Board()
+        self.advancements = 0
+
+    @property
+    def gained_button_count(self):
+        return sum([piece.buttons for piece in self.board.placed_pieces])
+
+    def can_hop_opponent(self):
+        return self.advancements <= self.opponent.advancements
+
+
+
+class Game:
+    """
+    The Patchwork engine!
+    """
+
+    def __init__(self, player, opponent):
+        self.player = player
+        self.opponent = opponent
+
+        # ensure the players oppose one another
+        self.player.opponent = self.opponent
+        self.opponent.opponent = self.player
+
+        # initialize and randomize pieces;
+        self.pieces = [p for p in GamePieces().pieces]
+        random.shuffle(self.pieces)
+        self.pieces = itertools.cycle(self.pieces)  # pull with `next(pool)`
+
+        self.ply = 0
+        self.max_advancement = 53
+        self.depth = 5
+
+        self.decision_tree = Node(name="Start")
+
+        self.final_decisions = []
+
+    @property
+    def is_over(self):
+        return self.player.advancements == 53 and self.opponent.advancements == 53
+
+    @property
+    def active_player(self):
+        return self.player if self.player.advancements <= self.opponent.advancements else self.opponent
+
+    def start(self):
+        while not self.is_over:
+            self.populate_decision_tree(self.decision_tree)
+
+    def populate_decision_tree(self, base_node):
+        # can the player hop?
+        if self.
+        d = Decision(
+            player=self.active_player
+        )
+
+
+        decision = Node("", decision=d, parent=base_node)
+
+
+class Decision:
+    def __init__(self, player, piece, piece_placement_position):
+        self.player = player
+        self.is_hop = False if piece else True
+        self.is_placement = True if piece else False
+        self.piece_placement_position = piece_placement_position
+
+alice = Player(name="Alice")
+bob = Player(name="Bob")
+
+pinnekjott = Game(alice, bob)
+pinnekjott.start()
