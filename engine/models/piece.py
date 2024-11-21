@@ -57,45 +57,22 @@ class Piece:
 
         # get normal rotations
         for i in range(0, 4):
-            orientations.append(
-                PieceOrientation(
-                    name=f"{self.name}R{i}F0",
-                    bitboard_mask=numpy.rot90(self.base_orientation, k=i)
-                )
-            )
+
+            orientation = numpy.rot90(self.base_orientation, k=i)
+
+            if not any([o for o in orientations if numpy.array_equal(o.bitboard_mask, orientation)]):
+                orientations.append(PieceOrientation(name=f"{self.name}R{i}F0", bitboard_mask=orientation))
 
         # get flipped rotations
         flipped_base_orientation = numpy.flip(self.base_orientation, axis=1)
 
         for i in range(0, 4):
-            orientations.append(
-                PieceOrientation(
-                    name=f"{self.name}R{i}F1",
-                    bitboard_mask=numpy.rot90(flipped_base_orientation, k=i)
-                )
-            )
+            orientation = numpy.rot90(flipped_base_orientation, k=i)
 
-        # TODO: this doesnt work
-        # remove redundant orientations
-        unique_orientations = []
+            if not any([o for o in orientations if numpy.array_equal(o.bitboard_mask, orientation)]):
+                orientations.append(PieceOrientation(name=f"{self.name}R{i}F1", bitboard_mask=orientation))
 
-        for i, o1 in enumerate(orientations):
-            if not numpy.any([o2 for o2 in unique_orientations if numpy.array_equal(o1, o2)]):
-                unique_orientations.append(o1)
-
-        # for each orientation, convert the numpy arrays into integer arrays (which implicitly represent big-endian
-        # binary-formatted rows)
-        for o in unique_orientations:
-
-            bitboard_masks = []
-
-            for row in o.bitboard_mask:
-                # np array to integer representation of the np array's implicit big-endian binary string!
-                bitboard_masks.append(int("".join([str(x) for x in row.tolist()]), 2))
-
-            o.bitboard_mask = bitboard_masks
-
-        return unique_orientations
+        return orientations
 
 
 class PieceOrientation:
