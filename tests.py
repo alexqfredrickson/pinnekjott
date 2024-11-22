@@ -1,12 +1,12 @@
 import unittest
 import random
 from models import Board
-from engine import GamePieces
+from data import GamePieces
 
 
 class EngineTests(unittest.TestCase):
 
-    all_pieces = GamePieces.pieces
+    all_pieces = GamePieces().pieces
     board = Board()
 
     @unittest.skip
