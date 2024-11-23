@@ -10,3 +10,8 @@ The general idea is to create an engine that simulates a Patchwork game, and to 
 Player boards are represented as 9-bit integer arrays (i.e. as [*bitboards*](https://en.wikipedia.org/wiki/Bitboard)).
 
 This is an extremely unfinished project.
+
+## importing pieces
+
+`~/piece_importer/` is a code generation tool used to import your own custom pieces into the `GamePieces` class, if 
+you want. To run it, run `cd /piece_importer/` and `npm start`.
