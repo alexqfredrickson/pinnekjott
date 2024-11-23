@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/PieceBuilder.css';
+import './PieceBuilder.css';
 import PiecePalette from './PiecePalette.js';
 import PiecePreview from './PiecePreview.js';
 import PieceDetails from './PieceDetails.js';
@@ -19,6 +19,7 @@ class PieceBuilder extends React.Component {
       buttonCount: "",
       turnCount: "",
       cost: "",
+      name: "",
       currentNumpyStringFromGrid: "",
       pinnekjottString: ""
     }
@@ -28,6 +29,7 @@ class PieceBuilder extends React.Component {
     this.handleChangeButtonCount = this.handleChangeButtonCount.bind(this);
     this.handleChangeTurnCount = this.handleChangeTurnCount.bind(this);
     this.handleChangeCost = this.handleChangeCost.bind(this);
+    this.handleChangeName = this.handleChangeName.bind(this);
   }
 
   getGridAsNumpyString() {
@@ -56,9 +58,9 @@ class PieceBuilder extends React.Component {
 
       for (let j = 0; j < grid[i].length; j++) {
         if (grid[i][j][2] == true) {
-          numpyString = numpyString + "True, " 
+          numpyString = numpyString + "1, "
         } else {
-          numpyString = numpyString + "False, "
+          numpyString = numpyString + "0, "
         }
       }  
       numpyString = numpyString.slice(0, -2) + "],"
@@ -97,10 +99,11 @@ class PieceBuilder extends React.Component {
     //
 
     let pinnekjottString = "\nPiece(";
-    pinnekjottString = pinnekjottString + "\n    " + "squares=" + this.state.currentNumpyStringFromGrid + ",";
+    pinnekjottString = pinnekjottString + "\n    " + "base_orientation=" + this.state.currentNumpyStringFromGrid + ",";
     pinnekjottString = pinnekjottString + "\n    " + "buttons=" + this.state.buttonCount + ",";
-    pinnekjottString = pinnekjottString + "\n    " + "turns=" + this.state.turnCount + ",";
-    pinnekjottString = pinnekjottString + "\n    " + "cost=" + this.state.cost + "";
+    pinnekjottString = pinnekjottString + "\n    " + "time_cost=" + this.state.turnCount + ",";
+    pinnekjottString = pinnekjottString + "\n    " + "button_cost=" + this.state.cost + "";
+    pinnekjottString = pinnekjottString + "\n    " + "name=" + this.state.cost + "";
     pinnekjottString = pinnekjottString + "\n),";
 
     this.setState({
@@ -112,6 +115,7 @@ class PieceBuilder extends React.Component {
       buttonCount: "",
       turnCount: "",
       cost: "",
+      name: "",
       currentNumpyStringFromGrid: "",
       pinnekjottString: this.state.pinnekjottString + pinnekjottString
     });
@@ -133,7 +137,12 @@ class PieceBuilder extends React.Component {
 
   handleChangeCost(event) {
     this.setState({cost: event.target.value});
-    console.log("Changed cost.");
+    console.log("Changed button cost.");
+  }
+
+  handleChangeName(event) {
+    this.setState({name: event.target.value});
+    console.log("Changed name.");
   }
 
   render() {
@@ -159,6 +168,8 @@ class PieceBuilder extends React.Component {
               turnCountChanger={this.handleChangeTurnCount}
               cost={this.state.cost} 
               costChanger={this.handleChangeCost}
+              name={this.state.name}
+              nameChanger={this.handleChangeName}
               pieceSaver={this.handleSavePiece} 
             />
           </div>

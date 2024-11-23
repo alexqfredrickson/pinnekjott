@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/PieceBuilderInfo.css';
+import './PieceBuilderInfo.css';
 
 class PieceBuilderInfo extends React.Component {
 

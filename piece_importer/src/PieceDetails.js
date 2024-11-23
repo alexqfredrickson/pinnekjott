@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/PieceDetails.css';
+import './PieceDetails.css';
 
 class PieceDetails extends React.Component {
   render() {
@@ -28,6 +28,12 @@ class PieceDetails extends React.Component {
         <br/>
         
         <input className="form-control" type="text" value={this.props.turnCount} onChange={this.props.turnCountChanger} />
+        <br/>
+
+        <label>Piece Name</label>
+        <br/>
+
+        <input className="form-control" type="text" value={this.props.name} onChange={this.props.nameChanger} />
         <br/>
                 
         <input className="btn" type="submit" value="Save Piece" />

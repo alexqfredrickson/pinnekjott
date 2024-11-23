@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/PiecePaletteRow.css';
+import './PiecePaletteRow.css';
 import PiecePaletteSquare from './PiecePaletteSquare.js';
 
 class PiecePaletteRow extends React.Component {
