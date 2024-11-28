@@ -4,80 +4,84 @@ import numpy as np
 from anytree import Node, RenderTree
 
 
-class GamePieces:
+class BasePolyominoes:
+    """
+    The base set of polyominoes that encircle the board.
+    """
+
     def __init__(self):
-        self.pieces = [
-            Piece(
+        self.base_polyominoes = [
+            Patch(
                 base_orientation=np.array([[0, 1, 1, 0], [1, 1, 1, 1]]),
                 buttons=2,
                 time_cost=4,
                 button_cost=7,
-                name="A"
+                name="Pa"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 1], [0, 1, 1], [1, 1, 0]]),
                 buttons=3,
                 time_cost=6,
                 button_cost=8,
-                name="B"
+                name="Pb"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 1, 0], [1, 1, 1, 1], [0, 1, 1, 0]]),
                 buttons=1,
                 time_cost=3,
                 button_cost=5,
-                name="C"
+                name="Pc"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1], [1, 1], [1, 1], [1, 0]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=4,
-                name="D"
+                name="Pd"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1], [1, 1]]),
                 buttons=2,
                 time_cost=5,
                 button_cost=6,
-                name="E"
+                name="Pe"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 0, 1], [1, 1, 1]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=1,
-                name="F"
+                name="Pf"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 0], [1, 1, 1]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
-                name="G"
+                name="Pg"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1, 1, 1]]),
                 buttons=1,
                 time_cost=3,
                 button_cost=3,
-                name="H"
+                name="Ph"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 0, 0], [1, 1, 0], [0, 1, 1]]),
                 buttons=3,
                 time_cost=4,
                 button_cost=10,
-                name="I"
+                name="Pi"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]]),
                 buttons=2,
                 time_cost=2,
                 button_cost=7,
-                name="J"
+                name="Pj"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array(
                     [
                         [0, 0, 1, 0, 0],
@@ -88,168 +92,183 @@ class GamePieces:
                 buttons=1,
                 time_cost=4,
                 button_cost=1,
-                name="K"
+                name="Pk"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 0, 0, 1], [1, 1, 1, 1], [1, 0, 0, 0]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=1,
-                name="L"
+                name="Pl"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 0, 1, 0], [1, 1, 1, 1]]),
                 buttons=1,
                 time_cost=4,
                 button_cost=3,
-                name="M"
+                name="Pm"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 0, 1, 0], [1, 1, 1, 1], [0, 0, 1, 0]]),
                 buttons=1,
                 time_cost=3,
                 button_cost=0,
-                name="N"
+                name="Pn"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 0, 0, 1], [1, 1, 1, 1]]),
                 buttons=1,
                 time_cost=5,
                 button_cost=1,
-                name="O"
+                name="Po"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 0], [0, 1, 0], [1, 1, 1]]),
                 buttons=2,
                 time_cost=5,
                 button_cost=5,
-                name="P"
+                name="Pp"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 0], [0, 1, 1], [1, 1, 0], [0, 1, 0]]),
                 buttons=0,
                 time_cost=1,
                 button_cost=2,
-                name="Q"
+                name="Pq"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1, 1, 1, 1]]),
                 buttons=1,
                 time_cost=1,
                 button_cost=7,
-                name="R"
+                name="Pr"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 0, 0, 0], [1, 1, 1, 1]]),
                 buttons=2,
                 time_cost=3,
                 button_cost=10,
-                name="S"
+                name="Ps"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 0, 1], [1, 1, 1]]),
                 buttons=1,
                 time_cost=2,
                 button_cost=4,
-                name="T"
+                name="Pt"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 0, 1], [1, 1, 1]]),
                 buttons=2,
                 time_cost=6,
                 button_cost=4,
-                name="U"
+                name="Pu"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 1], [1, 1, 0], [0, 1, 1]]),
                 buttons=2,
                 time_cost=6,
                 button_cost=3,
-                name="V"
+                name="Pv"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1], [1, 1], [1, 1]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
-                name="W"
+                name="Pw"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 1], [1, 1, 0]]),
                 buttons=3,
                 time_cost=6,
                 button_cost=7,
-                name="X"
+                name="Px"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 0, 1], [1, 1, 1], [1, 0, 1]]),
                 buttons=0,
                 time_cost=3,
                 button_cost=2,
-                name="Y"
+                name="Py"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1], [1, 1], [0, 1], [0, 1]]),
                 buttons=3,
                 time_cost=5,
                 button_cost=10,
-                name="Z"
+                name="Pz"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1], [1, 1]]),
                 buttons=0,
                 time_cost=1,
                 button_cost=3,
-                name="AA"
+                name="Paa"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1], [1, 1], [1, 0]]),
                 buttons=1,
                 time_cost=2,
                 button_cost=3,
-                name="BB"
+                name="Pbb"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 1, 1], [1, 1, 0, 0]]),
                 buttons=1,
                 time_cost=3,
                 button_cost=2,
-                name="CC"
+                name="Pcc"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]]),
                 buttons=2,
                 time_cost=4,
                 button_cost=5,
-                name="DD"
+                name="Pdd"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[0, 1], [1, 1]]),
                 buttons=0,
                 time_cost=3,
                 button_cost=1,
-                name="EE"
+                name="Pee"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1]]),
                 buttons=0,
                 time_cost=1,
                 button_cost=2,
-                name="FF"
+                name="Pff"
             ),
-            Piece(
+            Patch(
                 base_orientation=np.array([[1, 1, 1]]),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
-                name="GG"
+                name="Pgg"
             )
         ]
 
 
-class Piece:
+class Monominos:
     """
-    A Patchwork piece.
+    The 1x1 polyominos obtained by advancing through the track.
+    """
+
+    def __init__(self):
+        self.monomino = Patch(
+            base_orientation=np.array([[1]]),
+            buttons=0,
+            time_cost=0,
+            button_cost=0,
+            name="Phh"
+        )
+
+
+class Patch:
+    """
+    A Patchwork patch (or 'patch') is a polyomino, with extra baggage.
     """
 
     def __init__(self, base_orientation, buttons, time_cost, button_cost, name):
@@ -258,13 +277,13 @@ class Piece:
         :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This is used to create
                                  "bitboard masks", which can be rotated or flipped.
         :type base_orientation: list of list of int
-        :param buttons: The amount of buttons depicted on the piece.
+        :param buttons: The amount of buttons depicted on the patch.
         :type buttons: int
-        :param time_cost: The amount of "hops" performed when this piece is purchased.
+        :param time_cost: The amount of "hops" performed when this patch is purchased.
         :type time_cost: int
-        :param button_cost: The cost of this piece (in buttons).
+        :param button_cost: The cost of this patch (in buttons).
         :type button_cost: int
-        :param name: A friendly name for this piece.
+        :param name: A friendly name for this patch.
         :type name: str
         """
 
@@ -278,10 +297,10 @@ class Piece:
 
     def __str__(self):
         """
-        Prints a piece to the terminal.
+        Prints a patch to the terminal.
         """
 
-        s = f"Piece {self.name}\n"
+        s = f"patch {self.name}\n"
 
         for i in range(0, len(self.base_orientation)):
             for j in range(0, len(self.base_orientation[i])):
@@ -296,7 +315,7 @@ class Piece:
 
     def _get_possible_orientations(self):
         """
-        Returns an array of a piece's possible rotated/flipped orientations.
+        Returns an array of a patch's possible rotated/flipped orientations.
         """
 
         orientations = []
@@ -307,7 +326,7 @@ class Piece:
             orientation = np.rot90(self.base_orientation, k=i)
 
             if not any([o for o in orientations if np.array_equal(o.bitboard_mask, orientation)]):
-                orientations.append(PieceOrientation(name=f"{self.name}R{i}F0", bitboard_mask=orientation))
+                orientations.append(PatchOrientation(name=f"{self.name}R{i}F0", bitboard_mask=orientation))
 
         # get flipped rotations
         flipped_base_orientation = np.flip(self.base_orientation, axis=1)
@@ -316,7 +335,7 @@ class Piece:
             orientation = np.rot90(flipped_base_orientation, k=i)
 
             if not any([o for o in orientations if np.array_equal(o.bitboard_mask, orientation)]):
-                orientations.append(PieceOrientation(name=f"{self.name}R{i}F1", bitboard_mask=orientation))
+                orientations.append(PatchOrientation(name=f"{self.name}R{i}F1", bitboard_mask=orientation))
 
         return orientations
 
@@ -324,17 +343,17 @@ class Piece:
         return player.buttons >= self.button_cost
 
 
-class PieceOrientation:
+class PatchOrientation:
     def __init__(self, name, bitboard_mask):
         self.name = name
         self.bitboard_mask = bitboard_mask
 
     def __str__(self):
         """
-        Prints a piece to the terminal.
+        Prints a patch to the terminal.
         """
 
-        s = f"Piece {self.name}\n"
+        s = f"patch {self.name}\n"
 
         for row in self.bitboard_mask:
             s += (format(row, f"0{int.bit_length(max(self.bitboard_mask))}b")  # bit-based string formatting lol
@@ -364,7 +383,7 @@ class Board:
 
     def __init__(self):
         self.bitboard = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # each integer in the array represents a row, from top to bottom
-        self.acquired_pieces = ()
+        self.acquired_patches = ()
 
     def __str__(self):
         s = ""
@@ -374,11 +393,11 @@ class Board:
 
         return s
 
-    def place_piece_on_board(self, board_position, piece_orientation):
+    def place_patch(self, board_position, patch_orientation):
         """
-        Places a piece on the board.
+        Places a patch on the board.
 
-        The piece's squares represent a "bitboard mask".
+        The patch's squares represent a "bitboard mask".
 
         :param board_position: A tuple containing the offset distances from the top and left sides of the board (respectively).
 
@@ -395,31 +414,31 @@ class Board:
           X        X       X      X    (8,4)    X      X      X     (8,8)
 
         :type board_position: tuple
-        :param piece_orientation: One of a piece's possible orientations.
-        :type piece_orientation: list of list of int
+        :param patch_orientation: One of a patch's possible orientations.
+        :type patch_orientation: list of list of int
         """
 
         # print(self.bitboard)
-        # print(piece_orientation)
+        # print(patch_orientation)
 
         top_offset = board_position[0]
         left_offset = board_position[1]
 
-        target_rows = range(top_offset, top_offset + len(piece_orientation))
+        target_rows = range(top_offset, top_offset + len(patch_orientation))
 
-        orientation_length = max([int.bit_length(x) for x in piece_orientation])
+        orientation_length = max([int.bit_length(x) for x in patch_orientation])
 
         j = 0
 
         for i in target_rows:
-            self.bitboard[i] = self.bitboard[i] | (piece_orientation[j] << (9 - left_offset - orientation_length))
+            self.bitboard[i] = self.bitboard[i] | (patch_orientation[j] << (9 - left_offset - orientation_length))
             j += 1
 
         # print(self.bitboard)
 
     @property
     def buttons(self):
-        return sum([piece.buttons for piece in self.acquired_pieces])
+        return sum([patch.buttons for patch in self.acquired_patches])
 
     @property
     def filled_squares_count(self):
@@ -471,10 +490,10 @@ class Game:
         self.player.opponent = self.opponent
         self.opponent.opponent = self.player
 
-        # initialize and randomize pieces
-        self.pieces = [p for p in GamePieces().pieces]
-        random.shuffle(self.pieces)
-        self.pieces = itertools.cycle(self.pieces)  # pull with `next(pool)`
+        # initialize and randomize patches
+        self.starting_position = [p for p in BasePolyominoes().base_polyominoes]
+        random.shuffle(self.starting_position)
+        self.patches = itertools.cycle(self.starting_position)  # pull with `next(pool)`
 
         self.ply = 0
         self.max_board_advancements = 53
@@ -505,17 +524,10 @@ class Game:
         depth += 1
 
         if depth <= self.max_depth:
-            # four base decisions: hop, pick first piece, pick second piece, or pick third piece
-            # each piece pick requires placement
-            decision_node = Node("foo", player=self.active_player, hop=False, piece=None, piece_placement_position=None, parent=base_node)
+            # four base decisions: hop, pick first patch, pick second patch, or pick third patch
+            # each patch pick requires placement
+            decision_node = Node("foo", player=self.active_player, hop=False, patch=None, patch_placement_position=None, parent=base_node)
             self.populate_decision_tree(decision_node, depth)
         else:
             for pre, fill, node in RenderTree(self.decision_tree):
                 print("%s%s" % (pre, node.name))
-
-
-alice = Player(name="Alice")
-bob = Player(name="Bob")
-
-pinnekjott = Game(alice, bob)
-pinnekjott.start()
