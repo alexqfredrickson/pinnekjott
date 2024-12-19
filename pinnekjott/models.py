@@ -293,7 +293,7 @@ class Patch:
         self.button_cost = button_cost
         self.name = name
 
-        self.orientations = self._get_possible_orientations()
+        self.orientations = self._get_orientations()
 
     def __str__(self):
         """
@@ -313,7 +313,7 @@ class Patch:
 
         return s
 
-    def _get_possible_orientations(self):
+    def _get_orientations(self):
         """
         Returns an array of a patch's possible rotated/flipped orientations.
         """
@@ -325,8 +325,8 @@ class Patch:
 
             orientation = np.rot90(self.base_orientation, k=i)
 
-            if not any([o for o in orientations if np.array_equal(o.bitboard_mask, orientation)]):
-                orientations.append(PatchOrientation(name=f"{self.name}R{i}F0", bitboard_mask=orientation))
+            if not any([o for o in orientations if np.array_equal(o.local_bitboard_mask, orientation)]):
+                orientations.append(PatchOrientation(name=f"{self.name}R{i}F0", local_bitboard_mask=orientation))
 
         # get flipped rotations
         flipped_base_orientation = np.flip(self.base_orientation, axis=1)
@@ -334,8 +334,8 @@ class Patch:
         for i in range(0, 4):
             orientation = np.rot90(flipped_base_orientation, k=i)
 
-            if not any([o for o in orientations if np.array_equal(o.bitboard_mask, orientation)]):
-                orientations.append(PatchOrientation(name=f"{self.name}R{i}F1", bitboard_mask=orientation))
+            if not any([o for o in orientations if np.array_equal(o.local_bitboard_mask, orientation)]):
+                orientations.append(PatchOrientation(name=f"{self.name}R{i}F1", local_bitboard_mask=orientation))
 
         return orientations
 
@@ -344,9 +344,14 @@ class Patch:
 
 
 class PatchOrientation:
-    def __init__(self, name, bitboard_mask):
+    def __init__(self, name, local_bitboard_mask):
         self.name = name
-        self.bitboard_mask = bitboard_mask
+
+        # "local bitboard mask" here refers to a bitboard representing this NxM-sized patch in a given orientation
+        self.local_bitboard_mask = local_bitboard_mask
+
+        # todo: generate global masks
+        self.global_bitboard_masks = ()  # "global" here means all possible 9x9 bitboards that this patch can fit into
 
     def __str__(self):
         """
@@ -355,8 +360,8 @@ class PatchOrientation:
 
         s = f"patch {self.name}\n"
 
-        for row in self.bitboard_mask:
-            s += (format(row, f"0{int.bit_length(max(self.bitboard_mask))}b")  # bit-based string formatting lol
+        for row in self.local_bitboard_mask:
+            s += (format(row, f"0{int.bit_length(max(self.local_bitboard_mask))}b")  # bit-based string formatting lol
                   .replace('0', '.')
                   .replace("1", "▓") + "\n")
 
