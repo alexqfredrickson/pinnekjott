@@ -4,6 +4,35 @@ import numpy as np
 from anytree import Node, RenderTree
 
 
+class Utils:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def convert_binary_array_to_int(binary_array):
+        return int("".join([b for b in binary_array]), 2)
+
+    @staticmethod
+    def convert_int_to_binary_array(integer):
+        binary_str = bin(integer)[2:]  # remove the '0b' prefix
+        binary_array = [int(bit) for bit in binary_str]
+        return binary_array
+
+    @staticmethod
+    def shift_binary_array_right(binary_array):
+        # simply prepend a 0, and remove the last item
+        for row in binary_array:
+            row.prepend(0)
+            row.pop()
+
+    @staticmethod
+    def shift_binary_array_left(binary_array):
+        # simply pop the first item in each row, and append a 0
+        for row in binary_array:
+            row.pop(0)
+            row.append(0)
+
+
 class BasePolyominoes:
     """
     The base set of polyominoes that encircle the board.
@@ -12,70 +41,106 @@ class BasePolyominoes:
     def __init__(self):
         self.base_polyominoes = [
             Patch(
-                base_orientation=np.array([[0, 1, 1, 0], [1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 1, 1, 0],
+                    [1, 1, 1, 1]]
+                ),
                 buttons=2,
                 time_cost=4,
                 button_cost=7,
                 name="Pa"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 1], [0, 1, 1], [1, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 1],
+                    [0, 1, 1],
+                    [1, 1, 0]]
+                ),
                 buttons=3,
                 time_cost=6,
                 button_cost=8,
                 name="Pb"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 1, 0], [1, 1, 1, 1], [0, 1, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 1, 0],
+                    [1, 1, 1, 1],
+                    [0, 1, 1, 0]]
+                ),
                 buttons=1,
                 time_cost=3,
                 button_cost=5,
                 name="Pc"
             ),
             Patch(
-                base_orientation=np.array([[0, 1], [1, 1], [1, 1], [1, 0]]),
+                base_orientation=np.array([
+                    [0, 1],
+                    [1, 1],
+                    [1, 1],
+                    [1, 0]]
+                ),
                 buttons=0,
                 time_cost=2,
                 button_cost=4,
                 name="Pd"
             ),
             Patch(
-                base_orientation=np.array([[1, 1], [1, 1]]),
+                base_orientation=np.array([
+                    [1, 1],
+                    [1, 1]]
+                ),
                 buttons=2,
                 time_cost=5,
                 button_cost=6,
                 name="Pe"
             ),
             Patch(
-                base_orientation=np.array([[1, 0, 1], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 0, 1],
+                    [1, 1, 1]]
+                ),
                 buttons=0,
                 time_cost=2,
                 button_cost=1,
                 name="Pf"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 0], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 1, 0],
+                    [1, 1, 1]]
+                ),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
                 name="Pg"
             ),
             Patch(
-                base_orientation=np.array([[1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 1, 1, 1]]
+                ),
                 buttons=1,
                 time_cost=3,
                 button_cost=3,
                 name="Ph"
             ),
             Patch(
-                base_orientation=np.array([[1, 0, 0], [1, 1, 0], [0, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 0, 0],
+                    [1, 1, 0],
+                    [0, 1, 1]]
+                ),
                 buttons=3,
                 time_cost=4,
                 button_cost=10,
                 name="Pi"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 1, 0],
+                    [0, 1, 0],
+                    [0, 1, 0],
+                    [1, 1, 1]]
+                ),
                 buttons=2,
                 time_cost=2,
                 button_cost=7,
@@ -95,154 +160,229 @@ class BasePolyominoes:
                 name="Pk"
             ),
             Patch(
-                base_orientation=np.array([[0, 0, 0, 1], [1, 1, 1, 1], [1, 0, 0, 0]]),
+                base_orientation=np.array([
+                    [0, 0, 0, 1],
+                    [1, 1, 1, 1],
+                    [1, 0, 0, 0]
+                ]),
                 buttons=0,
                 time_cost=2,
                 button_cost=1,
                 name="Pl"
             ),
             Patch(
-                base_orientation=np.array([[0, 0, 1, 0], [1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 0, 1, 0],
+                    [1, 1, 1, 1]
+                ]),
                 buttons=1,
                 time_cost=4,
                 button_cost=3,
                 name="Pm"
             ),
             Patch(
-                base_orientation=np.array([[0, 0, 1, 0], [1, 1, 1, 1], [0, 0, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 0, 1, 0],
+                    [1, 1, 1, 1],
+                    [0, 0, 1, 0]
+                ]),
                 buttons=1,
                 time_cost=3,
                 button_cost=0,
                 name="Pn"
             ),
             Patch(
-                base_orientation=np.array([[1, 0, 0, 1], [1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 0, 0, 1],
+                    [1, 1, 1, 1]
+                ]),
                 buttons=1,
                 time_cost=5,
                 button_cost=1,
                 name="Po"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 0], [0, 1, 0], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 1, 0],
+                    [0, 1, 0],
+                    [1, 1, 1]
+                ]),
                 buttons=2,
                 time_cost=5,
                 button_cost=5,
                 name="Pp"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 0], [0, 1, 1], [1, 1, 0], [0, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 0],
+                    [0, 1, 1],
+                    [1, 1, 0],
+                    [0, 1, 0]
+                ]),
                 buttons=0,
                 time_cost=1,
                 button_cost=2,
                 name="Pq"
             ),
             Patch(
-                base_orientation=np.array([[1, 1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 1, 1, 1, 1]
+                ]),
                 buttons=1,
                 time_cost=1,
                 button_cost=7,
                 name="Pr"
             ),
             Patch(
-                base_orientation=np.array([[1, 0, 0, 0], [1, 1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 0, 0, 0],
+                    [1, 1, 1, 1]
+                ]),
                 buttons=2,
                 time_cost=3,
                 button_cost=10,
                 name="Ps"
             ),
             Patch(
-                base_orientation=np.array([[0, 0, 1], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 0, 1],
+                    [1, 1, 1]
+                ]),
                 buttons=1,
                 time_cost=2,
                 button_cost=4,
                 name="Pt"
             ),
             Patch(
-                base_orientation=np.array([[0, 0, 1], [1, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 0, 1],
+                    [1, 1, 1]
+                ]),
                 buttons=2,
                 time_cost=6,
                 button_cost=4,
                 name="Pu"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 1], [1, 1, 0], [0, 1, 1]]),
+                base_orientation=np.array([
+                    [0, 1, 1],
+                    [1, 1, 0],
+                    [0, 1, 1]
+                ]),
                 buttons=2,
                 time_cost=6,
                 button_cost=3,
                 name="Pv"
             ),
             Patch(
-                base_orientation=np.array([[0, 1], [1, 1], [1, 1]]),
+                base_orientation=np.array([
+                    [0, 1],
+                    [1, 1],
+                    [1, 1]
+                ]),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
                 name="Pw"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 1], [1, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 1],
+                    [1, 1, 0]
+                ]),
                 buttons=3,
                 time_cost=6,
                 button_cost=7,
                 name="Px"
             ),
             Patch(
-                base_orientation=np.array([[1, 0, 1], [1, 1, 1], [1, 0, 1]]),
+                base_orientation=np.array([
+                    [1, 0, 1],
+                    [1, 1, 1],
+                    [1, 0, 1]
+                ]),
                 buttons=0,
                 time_cost=3,
                 button_cost=2,
                 name="Py"
             ),
             Patch(
-                base_orientation=np.array([[1, 1], [1, 1], [0, 1], [0, 1]]),
+                base_orientation=np.array([
+                    [1, 1],
+                    [1, 1],
+                    [0, 1],
+                    [0, 1]
+                ]),
                 buttons=3,
                 time_cost=5,
                 button_cost=10,
                 name="Pz"
             ),
             Patch(
-                base_orientation=np.array([[0, 1], [1, 1]]),
+                base_orientation=np.array([
+                    [0, 1],
+                    [1, 1]
+                ]),
                 buttons=0,
                 time_cost=1,
                 button_cost=3,
                 name="Paa"
             ),
             Patch(
-                base_orientation=np.array([[0, 1], [1, 1], [1, 0]]),
+                base_orientation=np.array([
+                    [0, 1],
+                    [1, 1],
+                    [1, 0]
+                ]),
                 buttons=1,
                 time_cost=2,
                 button_cost=3,
                 name="Pbb"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 1, 1], [1, 1, 0, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 1, 1],
+                    [1, 1, 0, 0]
+                ]),
                 buttons=1,
                 time_cost=3,
                 button_cost=2,
                 name="Pcc"
             ),
             Patch(
-                base_orientation=np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]]),
+                base_orientation=np.array([
+                    [0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0]]
+                ),
                 buttons=2,
                 time_cost=4,
                 button_cost=5,
                 name="Pdd"
             ),
             Patch(
-                base_orientation=np.array([[0, 1], [1, 1]]),
+                base_orientation=np.array([
+                    [0, 1],
+                    [1, 1]]
+                ),
                 buttons=0,
                 time_cost=3,
                 button_cost=1,
                 name="Pee"
             ),
             Patch(
-                base_orientation=np.array([[1, 1]]),
+                base_orientation=np.array([
+                    [1, 1]]
+                ),
                 buttons=0,
                 time_cost=1,
                 button_cost=2,
                 name="Pff"
             ),
             Patch(
-                base_orientation=np.array([[1, 1, 1]]),
+                base_orientation=np.array([
+                    [1, 1, 1]]
+                ),
                 buttons=0,
                 time_cost=2,
                 button_cost=2,
@@ -274,8 +414,8 @@ class Patch:
     def __init__(self, base_orientation, buttons, time_cost, button_cost, name):
         """
 
-        :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This is used to create
-                                 "bitboard masks", which can be rotated or flipped.
+        :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This is easy to visualize.
+                                 They become the basis for "bitboard masks", which can be rotated or flipped.
         :type base_orientation: list of list of int
         :param buttons: The amount of buttons depicted on the patch.
         :type buttons: int
@@ -350,8 +490,8 @@ class PatchOrientation:
         # "local bitboard mask" here refers to a bitboard representing this NxM-sized patch in a given orientation
         self.local_bitboard_mask = local_bitboard_mask
 
-        # todo: generate global masks
-        self.global_bitboard_masks = ()  # "global" here means all possible 9x9 bitboards that this patch can fit into
+        # "global" here means all possible 9x9 bitboards that this patch can fit into
+        self.global_bitboard_masks = self._generate_global_bitboard_masks()
 
     def __str__(self):
         """
@@ -366,6 +506,27 @@ class PatchOrientation:
                   .replace("1", "▓") + "\n")
 
         return s
+
+    def _generate_global_bitboard_masks(self):
+
+        global_bitboard_masks = ()
+
+        # create a bitboard of size 9x9, with this piece in the top left
+        bitboard_mask = self.local_bitboard_mask
+
+        for row in bitboard_mask:
+            while len(row) < 9:
+                row.append(0)
+
+        while len(bitboard_mask) < 9:
+            bitboard_mask.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        for i in range(0, 9 - len(bitboard_mask[0])):
+            pass
+            # todo: basically, shift this right n-many times and then np.rotate clockwise + shift right + np.rotate
+            # todo: counter-clockwise to generate the remaining positions
+
+        return global_bitboard_masks
 
 
 class Board:
@@ -423,9 +584,6 @@ class Board:
         :type patch_orientation: list of list of int
         """
 
-        # print(self.bitboard)
-        # print(patch_orientation)
-
         top_offset = board_position[0]
         left_offset = board_position[1]
 
@@ -438,8 +596,6 @@ class Board:
         for i in target_rows:
             self.bitboard[i] = self.bitboard[i] | (patch_orientation[j] << (9 - left_offset - orientation_length))
             j += 1
-
-        # print(self.bitboard)
 
     @property
     def buttons(self):
@@ -535,4 +691,7 @@ class Game:
             self.populate_decision_tree(decision_node, depth)
         else:
             for pre, fill, node in RenderTree(self.decision_tree):
-                print("%s%s" % (pre, node.name))
+                # print("%s%s" % (pre, node.name))
+                pass  # todo
+
+
