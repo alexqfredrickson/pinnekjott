@@ -10,7 +10,7 @@ class Utils:
 
     @staticmethod
     def convert_binary_array_to_int(binary_array):
-        return int("".join([b for b in binary_array]), 2)
+        return int("".join([str(b) for b in binary_array]), 2)
 
     @staticmethod
     def convert_int_to_binary_array(integer):
@@ -43,7 +43,7 @@ class Bitboard:
 
         self.name = name
         self.base_two = default_base_two
-        self.base_ten = Utils.convert_binary_array_to_int(self.base_two)
+        self.base_ten = [Utils.convert_binary_array_to_int(row) for row in self.base_two]
         self.height = len(self.base_two)
         self.width = len(self.base_two[0])
 
@@ -57,9 +57,7 @@ class Bitboard:
         s = f"patch {self.name}\n"
 
         for row in self.base_two:
-            s += (format(row, f"0{int.bit_length(max(self.base_two))}b")  # bit-based string formatting lol
-                  .replace('0', '.')
-                  .replace("1", "▓") + "\n")
+            s += "".join([str(r) for r in row.tolist()]).replace('0', '░').replace("1", "▓") + "\n"
 
         return s
 
@@ -68,7 +66,7 @@ class Bitboard:
         Generates all 9x9 bitboards that this one can fit into (base two).
         """
 
-        nine_by_nines = set()
+        nine_by_nines = []
 
         height_offset = 9 - self.height
         width_offset = 9 - self.width
@@ -83,10 +81,10 @@ class Bitboard:
 
                 # insert real data, using width offset
                 for row in self.base_two:
-                    new_row = row.copy()
+                    new_row = row.tolist()
 
                     for l in range(0, j):
-                        new_row.prepend(0)
+                        new_row.insert(0, 0)
 
                     while len(new_row) < 9:
                         new_row.append(0)
@@ -95,7 +93,7 @@ class Bitboard:
                 while len(new_bitboard) < 9:
                     new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-                nine_by_nines.add(new_bitboard)
+                nine_by_nines.append(new_bitboard)
 
         return nine_by_nines
 
@@ -505,7 +503,7 @@ class Patch:
         Prints a patch to the terminal.
         """
 
-        return str(self.default_bitboard)
+        return str(self.bitboards[0])
 
     def _get_bitboards(self):
 
