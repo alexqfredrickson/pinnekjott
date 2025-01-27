@@ -47,7 +47,7 @@ class Bitboard:
         self.height = len(self.base_two)
         self.width = len(self.base_two[0])
 
-        self.nine_by_nines = self._get_nine_by_nines()
+        self.base_two_9x9s = self._get_base_two_9x9s()
 
     def __str__(self):
         """
@@ -63,29 +63,39 @@ class Bitboard:
 
         return s
 
-    def _get_nine_by_nines(self):
+    def _get_base_two_9x9s(self):
         """
         Generates all 9x9 bitboards that this one can fit into (base two).
         """
 
-        # TODO
+        nine_by_nines = set()
 
-        nine_by_nines = ()
+        height_offset = 9 - self.height
+        width_offset = 9 - self.width
 
-        # create a bitboard of size 9x9, with this piece in the top left
-        bitboard_mask = self.base_two
+        for i in range(0, height_offset):
+            for j in range(0, width_offset):
+                new_bitboard = []
 
-        for row in bitboard_mask:
-            while len(row) < 9:
-                row.append(0)
+                # apply height offset first
+                for k in range(0, i):
+                    new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        while len(bitboard_mask) < 9:
-            bitboard_mask.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+                # insert real data, using width offset
+                for row in self.base_two:
+                    new_row = row.copy()
 
-        for i in range(0, 9 - len(bitboard_mask[0])):
-            pass
-            # todo: basically, shift this right n-many times and then np.rotate clockwise + shift right + np.rotate
-            # todo: counter-clockwise to generate the remaining positions
+                    for l in range(0, j):
+                        new_row.prepend(0)
+
+                    while len(new_row) < 9:
+                        new_row.append(0)
+
+                # insert remaining empty rows
+                while len(new_bitboard) < 9:
+                    new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+                nine_by_nines.add(new_bitboard)
 
         return nine_by_nines
 
