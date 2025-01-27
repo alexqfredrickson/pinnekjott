@@ -33,6 +33,63 @@ class Utils:
             row.append(0)
 
 
+class Bitboard:
+    def __init__(self, default_base_two, name=None):
+        """
+
+        :param default_base_two: A two-dimensional base-2 numpy array.
+        :param name: A name (optional).
+        """
+
+        self.name = name
+        self.base_two = default_base_two
+        self.base_ten = Utils.convert_binary_array_to_int(self.base_two)
+        self.height = len(self.base_two)
+        self.width = len(self.base_two[0])
+
+        self.nine_by_nines = self._get_nine_by_nines()
+
+    def __str__(self):
+        """
+        Prints a patch to the terminal.
+        """
+
+        s = f"patch {self.name}\n"
+
+        for row in self.base_two:
+            s += (format(row, f"0{int.bit_length(max(self.base_two))}b")  # bit-based string formatting lol
+                  .replace('0', '.')
+                  .replace("1", "▓") + "\n")
+
+        return s
+
+    def _get_nine_by_nines(self):
+        """
+        Generates all 9x9 bitboards that this one can fit into (base two).
+        """
+
+        # TODO
+
+        nine_by_nines = ()
+
+        # create a bitboard of size 9x9, with this piece in the top left
+        bitboard_mask = self.base_two
+
+        for row in bitboard_mask:
+            while len(row) < 9:
+                row.append(0)
+
+        while len(bitboard_mask) < 9:
+            bitboard_mask.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        for i in range(0, 9 - len(bitboard_mask[0])):
+            pass
+            # todo: basically, shift this right n-many times and then np.rotate clockwise + shift right + np.rotate
+            # todo: counter-clockwise to generate the remaining positions
+
+        return nine_by_nines
+
+
 class BasePolyominoes:
     """
     The base set of polyominoes that encircle the board.
@@ -41,7 +98,7 @@ class BasePolyominoes:
     def __init__(self):
         self.base_polyominoes = [
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1, 0],
                     [1, 1, 1, 1]]
                 ),
@@ -51,7 +108,7 @@ class BasePolyominoes:
                 name="Pa"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1],
                     [0, 1, 1],
                     [1, 1, 0]]
@@ -62,7 +119,7 @@ class BasePolyominoes:
                 name="Pb"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1, 0],
                     [1, 1, 1, 1],
                     [0, 1, 1, 0]]
@@ -73,7 +130,7 @@ class BasePolyominoes:
                 name="Pc"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1],
                     [1, 1],
                     [1, 1],
@@ -85,7 +142,7 @@ class BasePolyominoes:
                 name="Pd"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1],
                     [1, 1]]
                 ),
@@ -95,7 +152,7 @@ class BasePolyominoes:
                 name="Pe"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 0, 1],
                     [1, 1, 1]]
                 ),
@@ -105,7 +162,7 @@ class BasePolyominoes:
                 name="Pf"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 0],
                     [1, 1, 1]]
                 ),
@@ -115,7 +172,7 @@ class BasePolyominoes:
                 name="Pg"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1, 1, 1]]
                 ),
                 buttons=1,
@@ -124,7 +181,7 @@ class BasePolyominoes:
                 name="Ph"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 0, 0],
                     [1, 1, 0],
                     [0, 1, 1]]
@@ -135,7 +192,7 @@ class BasePolyominoes:
                 name="Pi"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 0],
                     [0, 1, 0],
                     [0, 1, 0],
@@ -147,7 +204,7 @@ class BasePolyominoes:
                 name="Pj"
             ),
             Patch(
-                base_orientation=np.array(
+                default_bitboard=np.array(
                     [
                         [0, 0, 1, 0, 0],
                         [1, 1, 1, 1, 1],
@@ -160,7 +217,7 @@ class BasePolyominoes:
                 name="Pk"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 0, 0, 1],
                     [1, 1, 1, 1],
                     [1, 0, 0, 0]
@@ -171,7 +228,7 @@ class BasePolyominoes:
                 name="Pl"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 0, 1, 0],
                     [1, 1, 1, 1]
                 ]),
@@ -181,7 +238,7 @@ class BasePolyominoes:
                 name="Pm"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 0, 1, 0],
                     [1, 1, 1, 1],
                     [0, 0, 1, 0]
@@ -192,7 +249,7 @@ class BasePolyominoes:
                 name="Pn"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 0, 0, 1],
                     [1, 1, 1, 1]
                 ]),
@@ -202,7 +259,7 @@ class BasePolyominoes:
                 name="Po"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 0],
                     [0, 1, 0],
                     [1, 1, 1]
@@ -213,7 +270,7 @@ class BasePolyominoes:
                 name="Pp"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 0],
                     [0, 1, 1],
                     [1, 1, 0],
@@ -225,7 +282,7 @@ class BasePolyominoes:
                 name="Pq"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1, 1, 1, 1]
                 ]),
                 buttons=1,
@@ -234,7 +291,7 @@ class BasePolyominoes:
                 name="Pr"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 0, 0, 0],
                     [1, 1, 1, 1]
                 ]),
@@ -244,7 +301,7 @@ class BasePolyominoes:
                 name="Ps"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 0, 1],
                     [1, 1, 1]
                 ]),
@@ -254,7 +311,7 @@ class BasePolyominoes:
                 name="Pt"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 0, 1],
                     [1, 1, 1]
                 ]),
@@ -264,7 +321,7 @@ class BasePolyominoes:
                 name="Pu"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1],
                     [1, 1, 0],
                     [0, 1, 1]
@@ -275,7 +332,7 @@ class BasePolyominoes:
                 name="Pv"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1],
                     [1, 1],
                     [1, 1]
@@ -286,7 +343,7 @@ class BasePolyominoes:
                 name="Pw"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1],
                     [1, 1, 0]
                 ]),
@@ -296,7 +353,7 @@ class BasePolyominoes:
                 name="Px"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 0, 1],
                     [1, 1, 1],
                     [1, 0, 1]
@@ -307,7 +364,7 @@ class BasePolyominoes:
                 name="Py"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1],
                     [1, 1],
                     [0, 1],
@@ -319,7 +376,7 @@ class BasePolyominoes:
                 name="Pz"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1],
                     [1, 1]
                 ]),
@@ -329,7 +386,7 @@ class BasePolyominoes:
                 name="Paa"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1],
                     [1, 1],
                     [1, 0]
@@ -340,7 +397,7 @@ class BasePolyominoes:
                 name="Pbb"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 1, 1],
                     [1, 1, 0, 0]
                 ]),
@@ -350,7 +407,7 @@ class BasePolyominoes:
                 name="Pcc"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1, 0],
                     [1, 1, 1],
                     [0, 1, 0]]
@@ -361,7 +418,7 @@ class BasePolyominoes:
                 name="Pdd"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [0, 1],
                     [1, 1]]
                 ),
@@ -371,7 +428,7 @@ class BasePolyominoes:
                 name="Pee"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1]]
                 ),
                 buttons=0,
@@ -380,7 +437,7 @@ class BasePolyominoes:
                 name="Pff"
             ),
             Patch(
-                base_orientation=np.array([
+                default_bitboard=np.array([
                     [1, 1, 1]]
                 ),
                 buttons=0,
@@ -398,7 +455,7 @@ class Monominos:
 
     def __init__(self):
         self.monomino = Patch(
-            base_orientation=np.array([[1]]),
+            default_bitboard=np.array([[1]]),
             buttons=0,
             time_cost=0,
             button_cost=0,
@@ -411,12 +468,10 @@ class Patch:
     A Patchwork patch (or 'patch') is a polyomino, with extra baggage.
     """
 
-    def __init__(self, base_orientation, buttons, time_cost, button_cost, name):
+    def __init__(self, default_bitboard, buttons, time_cost, button_cost, name):
         """
-
-        :param base_orientation: A two-dimensional numpy array containing 0 or 1 values. This is easy to visualize.
-                                 They become the basis for "bitboard masks", which can be rotated or flipped.
-        :type base_orientation: list of list of int
+        :param default_bitboard: A list of two-dimensional base-2 numpy arrays.
+        :type default_bitboard: list of np.array()
         :param buttons: The amount of buttons depicted on the patch.
         :type buttons: int
         :param time_cost: The amount of "hops" performed when this patch is purchased.
@@ -427,106 +482,44 @@ class Patch:
         :type name: str
         """
 
-        self.base_orientation = base_orientation
+        self.default_bitboard = default_bitboard
         self.buttons = buttons
         self.time_cost = time_cost
         self.button_cost = button_cost
         self.name = name
 
-        self.orientations = self._get_orientations()
+        self.bitboards = self._get_bitboards()
 
     def __str__(self):
         """
         Prints a patch to the terminal.
         """
 
-        s = f"patch {self.name}\n"
+        return str(self.default_bitboard)
 
-        for i in range(0, len(self.base_orientation)):
-            for j in range(0, len(self.base_orientation[i])):
-                if self.base_orientation[i][j]:
-                    s += "▓"
-                else:
-                    s += "."
+    def _get_bitboards(self):
 
-            s += "\n"
+        bitboards = []
 
-        return s
+        for i in range(0, 4):  # get unflipped rotations
 
-    def _get_orientations(self):
-        """
-        Returns an array of a patch's possible rotated/flipped orientations.
-        """
+            bitboard = np.rot90(self.default_bitboard, k=i)
 
-        orientations = []
+            if not any([b for b in bitboards if np.array_equal(b.base_two, bitboard)]):
+                bitboards.append(Bitboard(default_base_two=bitboard, name=f"{self.name}R{i}F0"))
 
-        # get normal rotations
-        for i in range(0, 4):
-
-            orientation = np.rot90(self.base_orientation, k=i)
-
-            if not any([o for o in orientations if np.array_equal(o.local_bitboard_mask, orientation)]):
-                orientations.append(PatchOrientation(name=f"{self.name}R{i}F0", local_bitboard_mask=orientation))
-
-        # get flipped rotations
-        flipped_base_orientation = np.flip(self.base_orientation, axis=1)
+        flipped_base_orientation = np.flip(self.default_bitboard, axis=1)  # get flipped rotations
 
         for i in range(0, 4):
-            orientation = np.rot90(flipped_base_orientation, k=i)
+            bitboard = np.rot90(flipped_base_orientation, k=i)
 
-            if not any([o for o in orientations if np.array_equal(o.local_bitboard_mask, orientation)]):
-                orientations.append(PatchOrientation(name=f"{self.name}R{i}F1", local_bitboard_mask=orientation))
+            if not any([b for b in bitboards if np.array_equal(b.base_two, bitboard)]):
+                bitboards.append(Bitboard(default_base_two=bitboard, name=f"{self.name}R{i}F1"))
 
-        return orientations
+        return bitboards
 
     def is_affordable_by_player(self, player):
         return player.buttons >= self.button_cost
-
-
-class PatchOrientation:
-    def __init__(self, name, local_bitboard_mask):
-        self.name = name
-
-        # "local bitboard mask" here refers to a bitboard representing this NxM-sized patch in a given orientation
-        self.local_bitboard_mask = local_bitboard_mask
-
-        # "global" here means all possible 9x9 bitboards that this patch can fit into
-        self.global_bitboard_masks = self._generate_global_bitboard_masks()
-
-    def __str__(self):
-        """
-        Prints a patch to the terminal.
-        """
-
-        s = f"patch {self.name}\n"
-
-        for row in self.local_bitboard_mask:
-            s += (format(row, f"0{int.bit_length(max(self.local_bitboard_mask))}b")  # bit-based string formatting lol
-                  .replace('0', '.')
-                  .replace("1", "▓") + "\n")
-
-        return s
-
-    def _generate_global_bitboard_masks(self):
-
-        global_bitboard_masks = ()
-
-        # create a bitboard of size 9x9, with this piece in the top left
-        bitboard_mask = self.local_bitboard_mask
-
-        for row in bitboard_mask:
-            while len(row) < 9:
-                row.append(0)
-
-        while len(bitboard_mask) < 9:
-            bitboard_mask.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-        for i in range(0, 9 - len(bitboard_mask[0])):
-            pass
-            # todo: basically, shift this right n-many times and then np.rotate clockwise + shift right + np.rotate
-            # todo: counter-clockwise to generate the remaining positions
-
-        return global_bitboard_masks
 
 
 class Board:
