@@ -23,17 +23,16 @@ class EngineTests(unittest.TestCase):
     def test_print_piece_bitboards(self):
         random_piece = random.sample(self.all_pieces, k=1)[0]
 
-        for o in random_piece.bitboards:
-            print(o)
+        for b in random_piece.bitboards:
+            print(b)
 
     @unittest.skip
     def test_print_board(self):
         print(self.board)
 
-    @unittest.skip   # todo
     def test_place_patch(self):
         random_piece = random.sample(self.all_pieces, k=1)[0]
-        random_piece_orientation = random.sample([o.bitboard_mask for o in random_piece.bitboards], k=1)[0]
+        random_piece_orientation = random.sample([b for b in random_piece.bitboards], k=1)[0]
         self.board.place_patch((1, 1), random_piece_orientation)
 
     @unittest.skip

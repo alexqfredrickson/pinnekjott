@@ -43,7 +43,7 @@ class Bitboard:
 
         self.name = name
         self.base_two = default_base_two
-        self.base_ten = [Utils.convert_binary_array_to_int(row) for row in self.base_two]
+        # self.base_ten = [Utils.convert_binary_array_to_int(row) for row in self.base_two]
         self.height = len(self.base_two)
         self.width = len(self.base_two[0])
 
@@ -93,7 +93,7 @@ class Bitboard:
                 while len(new_bitboard) < 9:
                     new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-                nine_by_nines.append(new_bitboard)
+                nine_by_nines.append(Bitboard(default_base_two=np.array(new_bitboard), name=f"{self.name}O({i},{j})"))
 
         return nine_by_nines
 
@@ -496,7 +496,7 @@ class Patch:
         self.button_cost = button_cost
         self.name = name
 
-        self.bitboards = self._get_bitboards()
+        self.bitboards = self._get_bitboards()  # i.e. each of the pach's possible rotations / orientations
 
     def __str__(self):
         """
@@ -531,40 +531,31 @@ class Patch:
 
 
 class Board:
-    """
-    A 9x9 board, represented as nine 9-bit integers, in big-endian binary form.
-
-    This represents an empty board:              This represents a non-empty board:
-
-    0:  000000000                                0: 000000000
-    0:  000000000                                0: 000000000
-    0:  000000000                                8: 000001000
-    0:  000000000                               28: 000011100
-    0:  000000000                                8: 000001000
-    0:  000000000                                0: 000000000
-    0:  000000000                                0: 000000000
-    0:  000000000                                0: 000000000
-    0:  000000000                                0: 000000000
-
-    """
 
     def __init__(self):
-        self.bitboard = [0, 0, 0, 0, 0, 0, 0, 0, 0]  # each integer in the array represents a row, from top to bottom
+        self.bitboard = Bitboard(
+            default_base_two=np.array([
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            ]),
+            name="Board"
+        )
+
         self.acquired_patches = ()
 
     def __str__(self):
-        s = ""
+        return str(self.bitboard)
 
-        for row in self.bitboard:
-            s += format(row, "09b") + "\n"
-
-        return s
-
-    def place_patch(self, board_position, patch_orientation):
+    def place_patch(self, board_position, bitboard):  # todo: should this accept a *patch*? or a bitboard?
         """
         Places a patch on the board.
-
-        The patch's squares represent a "bitboard mask".
 
         :param board_position: A tuple containing the offset distances from the top and left sides of the board (respectively).
 
@@ -581,21 +572,22 @@ class Board:
           X        X       X      X    (8,4)    X      X      X     (8,8)
 
         :type board_position: tuple
-        :param patch_orientation: One of a patch's possible orientations.
-        :type patch_orientation: list of list of int
         """
 
         top_offset = board_position[0]
         left_offset = board_position[1]
 
-        target_rows = range(top_offset, top_offset + len(patch_orientation))
+        # find 9x9 with matching top/left offset
+        relevant_nine_by_nine = [b for b in patch. if b.name.endswith(f"O({top_offset},{left_offset})")][0]
 
-        orientation_length = max([int.bit_length(x) for x in patch_orientation])
+        target_rows = range(top_offset, top_offset + len(patch_bitboard))
+
+        orientation_length = max([int.bit_length(x) for x in patch_bitboard])
 
         j = 0
 
         for i in target_rows:
-            self.bitboard[i] = self.bitboard[i] | (patch_orientation[j] << (9 - left_offset - orientation_length))
+            self.bitboard[i] = self.bitboard[i] | (patch_bitboard[j] << (9 - left_offset - orientation_length))
             j += 1
 
     @property
