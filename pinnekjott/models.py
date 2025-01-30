@@ -549,15 +549,13 @@ class Patch:
 
         valid_9x9s = []
 
-        for bitboard in self.bitboards:
-            for nine_by_nine in bitboard.base_two_9x9s:
-                for row1 in board.bitboard.base_two:
-                    for row2 in nine_by_nine.base_two:
-                        for i in zip(row1, row2):
-                            if i[0] + i[1] == 2:
-                                break
+        possible_9x9s = [n for b in self.bitboards for n in b.base_two_9x9s]
 
-                valid_9x9s.append(nine_by_nine)
+        for pnn in possible_9x9s:
+            new_9x9 = np.bitwise_and(board.bitboard.base_two, pnn.base_two)
+
+            if not any(cell == 1 for row in new_9x9 for cell in row):
+                valid_9x9s.append(pnn)
 
         return valid_9x9s
 
@@ -695,5 +693,4 @@ class Game:
             for pre, fill, node in RenderTree(self.decision_tree):
                 # print("%s%s" % (pre, node.name))
                 pass  # todo
-
 

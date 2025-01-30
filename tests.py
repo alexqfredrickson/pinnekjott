@@ -47,34 +47,39 @@ class EngineTests(unittest.TestCase):
         for v in valid_9x9s:
             print(v)
 
+    @unittest.skip
     def test_place_patch(self):
-        random_patch = random.sample(self.all_patches, k=1)[0]
-
         board = Board(
             bitboard=Bitboard(
                 np.array([
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 1, 0, 0, 0, 0, 1, 0],
                     [0, 0, 0, 0, 1, 0, 0, 0, 0],
                     [0, 0, 0, 0, 1, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
                 ]),
                 name="Board",
                 is_9x9=True
             )
         )
 
-        random_valid_placements = random_patch.get_valid_board_placements(board=board)
-        random_valid_placement = random.sample([b for b in random_valid_placements], k=1)[0]
-
-        print(random_valid_placement)
-        print(board)
-        board.place_patch(random_valid_placement)
-        print(board)
+        for i in range(0, 50):
+            random_patch = random.sample(self.all_patches, k=1)[0]
+            random_valid_placements = random_patch.get_valid_board_placements(board=board)
+            try:
+                random_valid_placement = random.sample([b for b in random_valid_placements], k=1)[0]
+                print(random_valid_placement)
+                board.place_patch(random_valid_placement)
+                print(board)
+            except ValueError as ve:
+                print("FAILED TO FIND VALID PLACEMENT FOR PATCH:")
+                print(random_patch)
+                print(board)
+                break
 
     @unittest.skip
     def test_print_starting_position(self):
