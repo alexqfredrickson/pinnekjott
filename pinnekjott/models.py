@@ -34,7 +34,7 @@ class Utils:
 
 
 class Bitboard:
-    def __init__(self, default_base_two, name=None):
+    def __init__(self, default_base_two, name=None, is_9x9=False):
         """
 
         :param default_base_two: A two-dimensional base-2 numpy array.
@@ -47,7 +47,9 @@ class Bitboard:
         self.height = len(self.base_two)
         self.width = len(self.base_two[0])
 
-        self.base_two_9x9s = self._get_base_two_9x9s()
+        # determine this bitboard's 9x9 bitboards, but only if it isn't already a 9x9
+        if not is_9x9:
+            self.base_two_9x9s = self._get_base_two_9x9s()
 
     def __str__(self):
         """
@@ -71,8 +73,8 @@ class Bitboard:
         height_offset = 9 - self.height
         width_offset = 9 - self.width
 
-        for i in range(0, height_offset):
-            for j in range(0, width_offset):
+        for i in range(0, height_offset + 1):
+            for j in range(0, width_offset + 1):
                 new_bitboard = []
 
                 # apply height offset first
@@ -89,11 +91,19 @@ class Bitboard:
                     while len(new_row) < 9:
                         new_row.append(0)
 
+                    new_bitboard.append(new_row)
+
                 # insert remaining empty rows
                 while len(new_bitboard) < 9:
                     new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-                nine_by_nines.append(Bitboard(default_base_two=np.array(new_bitboard), name=f"{self.name}O({i},{j})"))
+                nine_by_nines.append(
+                    Bitboard(
+                        default_base_two=np.array(new_bitboard),
+                        name=f"{self.name}O({i},{j})",
+                        is_9x9=True
+                    )
+                )
 
         return nine_by_nines
 
@@ -496,7 +506,7 @@ class Patch:
         self.button_cost = button_cost
         self.name = name
 
-        self.bitboards = self._get_bitboards()  # i.e. each of the pach's possible rotations / orientations
+        self.bitboards = self._get_bitboards()  # i.e. each of the patch's possible rotations / orientations
 
     def __str__(self):
         """
@@ -529,11 +539,33 @@ class Patch:
     def is_affordable_by_player(self, player):
         return player.buttons >= self.button_cost
 
+    def get_valid_board_placements(self, board):
+        """
+
+        :param board:
+        :type board: Board
+        :return:
+        """
+
+        valid_9x9s = []
+
+        for bitboard in self.bitboards:
+            for nine_by_nine in bitboard.base_two_9x9s:
+                for row1 in board.bitboard.base_two:
+                    for row2 in nine_by_nine.base_two:
+                        for i in zip(row1, row2):
+                            if i[0] + i[1] == 2:
+                                break
+
+                valid_9x9s.append(nine_by_nine)
+
+        return valid_9x9s
+
 
 class Board:
 
-    def __init__(self):
-        self.bitboard = Bitboard(
+    def __init__(self, bitboard=None):
+        self.bitboard = bitboard if bitboard is not None else Bitboard(
             default_base_two=np.array([
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -553,42 +585,19 @@ class Board:
     def __str__(self):
         return str(self.bitboard)
 
-    def place_patch(self, board_position, bitboard):  # todo: should this accept a *patch*? or a bitboard?
+    def place_patch(self, valid_9x9_bitboard):
         """
-        Places a patch on the board.
+        Overlays a presumably valid 9x9 patch bitboard on the existing board.
 
-        :param board_position: A tuple containing the offset distances from the top and left sides of the board (respectively).
-
-        For example:
-
-        (0,0)      X       X      X      X      X      X      X       X
-          X        X       X      X      X      X      X    (1,7)     X
-          X      (2,1)     X      X      X      X      X      X       X
-          X        X       X      X      X      X      X      X       X
-          X        X       X      X    (4,4)    X      X      X       X
-          X        X       X      X      X      X      X      X       X
-          X        X       X      X      X      X      X      X       X
-          X        X       X      X      X      X      X      X       X
-          X        X       X      X    (8,4)    X      X      X     (8,8)
-
-        :type board_position: tuple
+        :param valid_9x9_bitboard: A 9x9 patch bitboard.
         """
 
-        top_offset = board_position[0]
-        left_offset = board_position[1]
+        new_bitboard = []
 
-        # find 9x9 with matching top/left offset
-        relevant_nine_by_nine = [b for b in patch. if b.name.endswith(f"O({top_offset},{left_offset})")][0]
+        for i in range(0, 9):
+            new_bitboard.append(np.bitwise_or(self.bitboard.base_two[i], valid_9x9_bitboard.base_two[i]))
 
-        target_rows = range(top_offset, top_offset + len(patch_bitboard))
-
-        orientation_length = max([int.bit_length(x) for x in patch_bitboard])
-
-        j = 0
-
-        for i in target_rows:
-            self.bitboard[i] = self.bitboard[i] | (patch_bitboard[j] << (9 - left_offset - orientation_length))
-            j += 1
+        self.bitboard = Bitboard(default_base_two=np.array(new_bitboard), name="Board", is_9x9=True)
 
     @property
     def buttons(self):
@@ -598,19 +607,19 @@ class Board:
     def filled_squares_count(self):
         return sum([bin(row).count("1") for row in self.bitboard])
 
-    @property
-    def has_seven_by_seven_bonus(self):
-        return (
-            all([row in (511, 510, 509, 508) for row in self.bitboard[0:7]]) or
-            all([row in (511, 510, 509, 508) for row in self.bitboard[1:8]]) or
-            all([row in (511, 510, 509, 508) for row in self.bitboard[2:9]]) or
-            all([row in (254, 255, 510, 511) for row in self.bitboard[0:7]]) or
-            all([row in (254, 255, 510, 511) for row in self.bitboard[1:8]]) or
-            all([row in (254, 255, 510, 511) for row in self.bitboard[2:9]]) or
-            all([row in (127, 255, 383, 511) for row in self.bitboard[0:7]]) or
-            all([row in (127, 255, 383, 511) for row in self.bitboard[1:8]]) or
-            all([row in (127, 255, 383, 511) for row in self.bitboard[2:9]])
-        )
+    # @  # todo
+    # def has_seven_by_seven_bonus(self):
+    #     return (
+    #         all([row in (511, 510, 509, 508) for row in self.bitboard[0:7]]) or
+    #         all([row in (511, 510, 509, 508) for row in self.bitboard[1:8]]) or
+    #         all([row in (511, 510, 509, 508) for row in self.bitboard[2:9]]) or
+    #         all([row in (254, 255, 510, 511) for row in self.bitboard[0:7]]) or
+    #         all([row in (254, 255, 510, 511) for row in self.bitboard[1:8]]) or
+    #         all([row in (254, 255, 510, 511) for row in self.bitboard[2:9]]) or
+    #         all([row in (127, 255, 383, 511) for row in self.bitboard[0:7]]) or
+    #         all([row in (127, 255, 383, 511) for row in self.bitboard[1:8]]) or
+    #         all([row in (127, 255, 383, 511) for row in self.bitboard[2:9]])
+    #     )
 
 
 class Player:

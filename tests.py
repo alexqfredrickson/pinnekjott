@@ -1,7 +1,8 @@
 import unittest
 import random
 from pfen.pfen import PFEN
-from pinnekjott.models import Board, BasePolyominoes, Game, Player
+from pinnekjott.models import Board, BasePolyominoes, Game, Player, Bitboard
+import numpy as np
 
 
 class EngineTests(unittest.TestCase):
@@ -9,19 +10,19 @@ class EngineTests(unittest.TestCase):
     alice = Player(name="Alice")
     bob = Player(name="Bob")
 
-    all_pieces = BasePolyominoes().base_polyominoes
+    all_patches = BasePolyominoes().base_polyominoes
 
     board = Board()
     pfen = PFEN()
 
     @unittest.skip
     def test_print_pieces(self):
-        for p in self.all_pieces:
+        for p in self.all_patches:
             print(p)
 
     @unittest.skip
     def test_print_piece_bitboards(self):
-        random_piece = random.sample(self.all_pieces, k=1)[0]
+        random_piece = random.sample(self.all_patches, k=1)[0]
 
         for b in random_piece.bitboards:
             print(b)
@@ -30,10 +31,50 @@ class EngineTests(unittest.TestCase):
     def test_print_board(self):
         print(self.board)
 
+    @unittest.skip
+    def test_patch_has_valid_9x9s(self):
+        random_piece = random.sample(self.all_patches, k=1)[0]
+
+        for b in random_piece.bitboards:
+            assert len(b.base_two_9x9s) > 0
+
+    @unittest.skip
+    def test_get_valid_9x9s(self):
+        random_patch = random.sample(self.all_patches, k=1)[0]
+
+        valid_9x9s = random_patch.get_valid_board_placements(Board())
+
+        for v in valid_9x9s:
+            print(v)
+
     def test_place_patch(self):
-        random_piece = random.sample(self.all_pieces, k=1)[0]
-        random_piece_orientation = random.sample([b for b in random_piece.bitboards], k=1)[0]
-        self.board.place_patch((1, 1), random_piece_orientation)
+        random_patch = random.sample(self.all_patches, k=1)[0]
+
+        board = Board(
+            bitboard=Bitboard(
+                np.array([
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ]),
+                name="Board",
+                is_9x9=True
+            )
+        )
+
+        random_valid_placements = random_patch.get_valid_board_placements(board=board)
+        random_valid_placement = random.sample([b for b in random_valid_placements], k=1)[0]
+
+        print(random_valid_placement)
+        print(board)
+        board.place_patch(random_valid_placement)
+        print(board)
 
     @unittest.skip
     def test_print_starting_position(self):
