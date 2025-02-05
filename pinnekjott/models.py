@@ -107,6 +107,14 @@ class Bitboard:
 
         return nine_by_nines
 
+    @property
+    def is_full(self):
+        """
+        A bitboard is "full" if it only contains 1s.
+        """
+
+        return all([cell == 1 for row in self.base_two for cell in row])
+
 
 class BasePolyominoes:
     """
@@ -605,19 +613,23 @@ class Board:
     def filled_squares_count(self):
         return sum([bin(row).count("1") for row in self.bitboard])
 
-    # @  # todo
-    # def has_seven_by_seven_bonus(self):
-    #     return (
-    #         all([row in (511, 510, 509, 508) for row in self.bitboard[0:7]]) or
-    #         all([row in (511, 510, 509, 508) for row in self.bitboard[1:8]]) or
-    #         all([row in (511, 510, 509, 508) for row in self.bitboard[2:9]]) or
-    #         all([row in (254, 255, 510, 511) for row in self.bitboard[0:7]]) or
-    #         all([row in (254, 255, 510, 511) for row in self.bitboard[1:8]]) or
-    #         all([row in (254, 255, 510, 511) for row in self.bitboard[2:9]]) or
-    #         all([row in (127, 255, 383, 511) for row in self.bitboard[0:7]]) or
-    #         all([row in (127, 255, 383, 511) for row in self.bitboard[1:8]]) or
-    #         all([row in (127, 255, 383, 511) for row in self.bitboard[2:9]])
-    #     )
+    # todo: test
+    def has_seven_by_seven_bonus(self):
+        """
+        Returns True if any of the 9x9 board's constituent 7x7 boards are full.
+        """
+
+        for i in range(0, 3):
+            for j in range(0, 3):
+                seven_by_seven = Bitboard(
+                    name="temp",
+                    default_base_two=np.array([row[0+j:7+j] for row in self.bitboard[0+i:7+i]])
+                )
+
+                if seven_by_seven.is_full:
+                    return True
+
+        return False
 
 
 class Player:
