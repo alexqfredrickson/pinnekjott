@@ -614,6 +614,7 @@ class Board:
         return sum([bin(row).count("1") for row in self.bitboard])
 
     # todo: test
+    @property
     def has_seven_by_seven_bonus(self):
         """
         Returns True if any of the 9x9 board's constituent 7x7 boards are full.
@@ -629,6 +630,21 @@ class Board:
                 if seven_by_seven.is_full:
                     return True
 
+        return False
+
+    @property
+    def island_count(self):
+        """
+        Determines the number of "islands" (i.e. contiguous '1's) on the board.
+
+        Low island counts are generally an indication of efficient piece placement. If the board is completely full,
+        you only have one island. This also means you've probably won the game. If the board looks like Indonesia,
+        it's probably going to be hard to place pieces. Indonesia has 17,000 islands!
+
+        This method decomposes the numpy array into a graph and implements breadth-first search.
+        """
+
+        pass
         return False
 
 
