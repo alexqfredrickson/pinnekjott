@@ -1,7 +1,7 @@
 import unittest
 import random
 from pfen.pfen import PFEN
-from pinnekjott.models import Board, BasePolyominoes, Game, Player, Bitboard
+from pinnekjott.models import Board, Polyominoes, Game, Player, Bitboard
 import numpy as np
 
 
@@ -10,37 +10,41 @@ class EngineTests(unittest.TestCase):
     alice = Player(name="Alice")
     bob = Player(name="Bob")
 
-    all_patches = BasePolyominoes().base_polyominoes
+    all_polyominoes = Polyominoes().all_polyominoes
 
-    board = Board()
     pfen = PFEN()
+    game = Game(alice, bob)
 
     @unittest.skip
-    def test_print_pieces(self):
-        for p in self.all_patches:
+    def test_noop(self):
+        assert True
+
+    @unittest.skip
+    def test_print_patches(self):
+        for p in self.all_polyominoes:
             print(p)
 
     @unittest.skip
-    def test_print_piece_bitboards(self):
-        random_piece = random.sample(self.all_patches, k=1)[0]
+    def test_print_patch_variations(self):
+        random_patch = random.sample(self.all_polyominoes, k=1)[0]
 
-        for b in random_piece.bitboards:
+        for b in random_patch.variations:
             print(b)
 
     @unittest.skip
     def test_print_board(self):
-        print(self.board)
+        print(self.alice.board)
 
     @unittest.skip
     def test_patch_has_valid_9x9s(self):
-        random_piece = random.sample(self.all_patches, k=1)[0]
+        random_patch = random.sample(self.all_polyominoes, k=1)[0]
 
-        for b in random_piece.bitboards:
-            assert len(b.base_two_9x9s) > 0
+        for v in random_patch.variations:
+            assert len(v.bitboard.base_two_9x9s) > 0
 
     @unittest.skip
     def test_get_valid_9x9s(self):
-        random_patch = random.sample(self.all_patches, k=1)[0]
+        random_patch = random.sample(self.all_polyominoes, k=1)[0]
 
         valid_9x9s = random_patch.get_valid_board_placements(Board())
 
@@ -62,14 +66,14 @@ class EngineTests(unittest.TestCase):
                     [0, 0, 0, 0, 1, 0, 0, 0, 0],
                     [0, 0, 0, 0, 1, 0, 0, 0, 0],
                 ]),
-                name="Board",
-                is_9x9=True
+                name="Board"
             )
         )
 
         for i in range(0, 50):
-            random_patch = random.sample(self.all_patches, k=1)[0]
+            random_patch = random.sample(self.all_polyominoes, k=1)[0]
             random_valid_placements = random_patch.get_valid_board_placements(board=board)
+
             try:
                 random_valid_placement = random.sample([b for b in random_valid_placements], k=1)[0]
                 print(random_valid_placement)

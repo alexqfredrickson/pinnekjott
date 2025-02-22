@@ -33,96 +33,13 @@ class Utils:
             row.append(0)
 
 
-class Bitboard:
-    def __init__(self, default_base_two, name=None, is_9x9=False):
-        """
-
-        :param default_base_two: A two-dimensional base-2 numpy array.
-        :param name: A name (optional).
-        """
-
-        self.name = name
-        self.base_two = default_base_two
-        # self.base_ten = [Utils.convert_binary_array_to_int(row) for row in self.base_two]
-        self.height = len(self.base_two)
-        self.width = len(self.base_two[0])
-
-        # determine this bitboard's 9x9 bitboards, but only if it isn't already a 9x9
-        if not is_9x9:
-            self.base_two_9x9s = self._get_base_two_9x9s()
-
-    def __str__(self):
-        """
-        Prints a patch to the terminal.
-        """
-
-        s = f"patch {self.name}\n"
-
-        for row in self.base_two:
-            s += "".join([str(r) for r in row.tolist()]).replace('0', '░').replace("1", "▓") + "\n"
-
-        return s
-
-    def _get_base_two_9x9s(self):
-        """
-        Generates all 9x9 bitboards that this one can fit into (base two).
-        """
-
-        nine_by_nines = []
-
-        height_offset = 9 - self.height
-        width_offset = 9 - self.width
-
-        for i in range(0, height_offset + 1):
-            for j in range(0, width_offset + 1):
-                new_bitboard = []
-
-                # apply height offset first
-                for k in range(0, i):
-                    new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-                # insert real data, using width offset
-                for row in self.base_two:
-                    new_row = row.tolist()
-
-                    for l in range(0, j):
-                        new_row.insert(0, 0)
-
-                    while len(new_row) < 9:
-                        new_row.append(0)
-
-                    new_bitboard.append(new_row)
-
-                # insert remaining empty rows
-                while len(new_bitboard) < 9:
-                    new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-                nine_by_nines.append(
-                    Bitboard(
-                        default_base_two=np.array(new_bitboard),
-                        name=f"{self.name}O({i},{j})",
-                        is_9x9=True
-                    )
-                )
-
-        return nine_by_nines
-
-    @property
-    def is_full(self):
-        """
-        A bitboard is "full" if it only contains 1s.
-        """
-
-        return all([cell == 1 for row in self.base_two for cell in row])
-
-
-class BasePolyominoes:
+class Polyominoes:
     """
     The base set of polyominoes that encircle the board.
     """
 
     def __init__(self):
-        self.base_polyominoes = [
+        self.polyominoes = [
             Patch(
                 default_bitboard=np.array([
                     [0, 1, 1, 0],
@@ -473,13 +390,7 @@ class BasePolyominoes:
             )
         ]
 
-
-class Monominos:
-    """
-    The 1x1 polyominos obtained by advancing through the track.
-    """
-
-    def __init__(self):
+        # the 1x1 polyomino obtained by advancing through the turn track
         self.monomino = Patch(
             default_bitboard=np.array([[1]]),
             buttons=0,
@@ -487,6 +398,90 @@ class Monominos:
             button_cost=0,
             name="Phh"
         )
+
+        self.all_polyominoes = [p for p in self.polyominoes]
+        self.all_polyominoes.append(self.monomino)
+
+
+class Bitboard:
+    def __init__(self, default_base_two, name=None):
+        """
+
+        :param default_base_two: A two-dimensional base-2 numpy array.
+        :param name: A name (optional).
+        """
+
+        self.name = name
+        self.base_two = default_base_two
+        self.height = len(self.base_two)
+        self.width = len(self.base_two[0])
+
+    def __str__(self):
+        """
+        Prints a patch to the terminal.
+        """
+
+        s = f"patch {self.name}\n"
+
+        for row in self.base_two:
+            s += "".join([str(r) for r in row.tolist()]).replace('0', '░').replace("1", "▓") + "\n"
+
+        return s
+
+    @property
+    def is_full(self):
+        """
+        A bitboard is "full" if it only contains 1s.
+        """
+
+        return all([cell == 1 for row in self.base_two for cell in row])
+
+
+class PatchVariation:
+    def __init__(self, name, parent_patch_name, bitboard):
+        self.name = name
+        self.base_patch_name = parent_patch_name
+        self.bitboard = bitboard
+
+        self.flipped = True if "F1" in self.name else False
+        self.rotated = True if "R1" in self.name or "R2" in self.name or "R3" in self.name else False
+        self.rotation_value = self._get_rotation_value()
+        self.height_offset, self.width_offset = self._get_offsets()
+
+    def _get_rotation_value(self):
+        """
+        The rotation value is 0 or None if the piece is not rotated. If the rotation value is 1, it is rotated 90
+        degrees clockwise relative to its initial orientation. If 2, 180 degrees. If 3, 270 degrees.
+        """
+
+        if not self.rotated:
+            return None
+
+        if "R0" in self.name:
+            return 0
+
+        if "R1" in self.name:
+            return 1
+
+        if "R2" in self.name:
+            return 2
+
+        if "R3" in self.name:
+            return 3
+
+        return None
+
+    def _get_offsets(self):
+        """
+        Returns height and width offsets.
+        """
+
+        if "O(" not in self.name:
+            return None, None
+
+        offset_index = self.name.find(",")
+
+        return self.name[offset_index - 1], self.name[offset_index + 1]
 
 
 class Patch:
@@ -508,64 +503,110 @@ class Patch:
         :type name: str
         """
 
+        self.name = name
         self.default_bitboard = default_bitboard
+
         self.buttons = buttons
         self.time_cost = time_cost
         self.button_cost = button_cost
-        self.name = name
 
-        self.bitboards = self._get_bitboards()  # i.e. each of the patch's possible rotations / orientations
+        self.variations = self._get_variations()  # i.e. each of the patch's possible rotations / orientations
 
     def __str__(self):
         """
         Prints a patch to the terminal.
         """
 
-        return str(self.bitboards[0])
+        return str(self.variations[0])
 
-    def _get_bitboards(self):
+    def _get_variations(self):
+        """
+        Returns all bitboards representing this piece in flipped and rotated orientations.
+        """
 
-        bitboards = []
+        patch_variations = []
 
-        for i in range(0, 4):  # get unflipped rotations
+        for flip_value in range(0, 2):
 
-            bitboard = np.rot90(self.default_bitboard, k=i)
+            # flip the default bitboard, if required
+            bitboard = np.flip(self.default_bitboard, axis=1) if flip_value == 1 else self.default_bitboard
 
-            if not any([b for b in bitboards if np.array_equal(b.base_two, bitboard)]):
-                bitboards.append(Bitboard(default_base_two=bitboard, name=f"{self.name}R{i}F0"))
+            for rotation_value in range(0, 4):
 
-        flipped_base_orientation = np.flip(self.default_bitboard, axis=1)  # get flipped rotations
+                # rotate the flipped-or-unflipped bitboard, if required
+                bitboard = np.rot90(bitboard, k=rotation_value)
 
-        for i in range(0, 4):
-            bitboard = np.rot90(flipped_base_orientation, k=i)
+                # determine height and width of rotated/flippd bitboard
+                height = len(bitboard)
+                width = len(bitboard[0])
 
-            if not any([b for b in bitboards if np.array_equal(b.base_two, bitboard)]):
-                bitboards.append(Bitboard(default_base_two=bitboard, name=f"{self.name}R{i}F1"))
+                for height_offset_value in range(0, 9 - height + 1):
+                    for width_offset_value in range(0, 9 - width + 1):
 
-        return bitboards
+                        # determine the unique name for this patch variation
+                        variation_name = (f"{self.name}R{rotation_value}F{flip_value}"
+                                          f"O({height_offset_value},{width_offset_value})")
+
+                        # blow this up into a 9x9, applying height and width offsets as required
+                        new_bitboard = []
+
+                        for k in range(0, height_offset_value):
+                            new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+                        # insert real data, using width offset
+                        for row in bitboard:
+                            new_row = row.tolist()
+
+                            for l in range(0, width_offset_value):
+                                new_row.insert(0, 0)
+
+                            while len(new_row) < 9:
+                                new_row.append(0)
+
+                            new_bitboard.append(new_row)
+
+                        # insert remaining empty rows
+                        while len(new_bitboard) < 9:
+                            new_bitboard.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+                        try:
+                            nine_by_nine_bitboard = np.array(new_bitboard)
+                        except ValueError as e:
+                            print(e)
+                            exit(1)
+
+                        if not any(
+                                [pv for pv in patch_variations if np.array_equal(
+                                pv.bitboard.base_two, nine_by_nine_bitboard
+                        )]):
+                            patch_variations.append(
+                                PatchVariation(
+                                    name=variation_name,
+                                    parent_patch_name=self.name,
+                                    bitboard=Bitboard(
+                                        default_base_two=nine_by_nine_bitboard,
+                                        name=variation_name
+                                    )
+                                )
+                            )
+
+        return patch_variations
 
     def is_affordable_by_player(self, player):
         return player.buttons >= self.button_cost
 
     def get_valid_board_placements(self, board):
-        """
+        valid_patch_variations = []
 
-        :param board:
-        :type board: Board
-        :return:
-        """
+        possible_patch_variations = [v.bitboard for v in self.variations]
 
-        valid_9x9s = []
-
-        possible_9x9s = [n for b in self.bitboards for n in b.base_two_9x9s]
-
-        for pnn in possible_9x9s:
-            new_9x9 = np.bitwise_and(board.bitboard.base_two, pnn.base_two)
+        for ppv in possible_patch_variations:
+            new_9x9 = np.bitwise_and(board.bitboard.base_two, ppv.base_two)
 
             if not any(cell == 1 for row in new_9x9 for cell in row):
-                valid_9x9s.append(pnn)
+                valid_patch_variations.append(ppv)
 
-        return valid_9x9s
+        return valid_patch_variations
 
 
 class Board:
@@ -603,7 +644,7 @@ class Board:
         for i in range(0, 9):
             new_bitboard.append(np.bitwise_or(self.bitboard.base_two[i], valid_9x9_bitboard.base_two[i]))
 
-        self.bitboard = Bitboard(default_base_two=np.array(new_bitboard), name="Board", is_9x9=True)
+        self.bitboard = Bitboard(default_base_two=np.array(new_bitboard), name="Board")
 
     @property
     def buttons(self):
@@ -666,12 +707,21 @@ class Player:
         return (self.board.filled_squares_count * 2) + self.buttons + (7 if self.board.has_seven_by_seven_bonus else 0)
 
 
+class Move:
+    def __init__(self, player, patch):
+        self.player = player
+        self.patch = patch
+        self.is_hop = True if not self.patch else False
+        self.is_placement = True if not self.is_hop else False
+
+
 class Game:
     """
     The Patchwork engine!
     """
 
     def __init__(self, player, opponent):
+        self.patch_dictionary = self._initialize_patch_dictionary()
         self.player = player
         self.opponent = opponent
 
@@ -680,8 +730,9 @@ class Game:
         self.opponent.opponent = self.player
 
         # initialize and randomize patches
-        self.starting_position = [p for p in BasePolyominoes().base_polyominoes]
+        self.starting_position = [p for p in Polyominoes().polyominoes]
         random.shuffle(self.starting_position)
+
         self.patches = itertools.cycle(self.starting_position)  # pull with `next(pool)`
 
         self.ply = 0
@@ -690,7 +741,7 @@ class Game:
 
         self.decision_tree = Node(name="Start", depth=0)
 
-        self.final_decisions = []
+        self.moves = []
 
     @property
     def is_over(self):
@@ -704,6 +755,10 @@ class Game:
     @property
     def active_opponent(self):
         return self.opponent if self.active_player == self.player else self.player
+
+    def _initialize_patch_dictionary(self):  # todo
+        patch_dictionary = {}.fromkeys([p.name for p in Polyominoes().all_polyominoes])
+        pass
 
     def start(self):
         while not self.is_over:
